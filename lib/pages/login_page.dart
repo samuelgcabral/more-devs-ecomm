@@ -1,0 +1,66 @@
+import 'package:flutter/material.dart';
+import 'package:more_devs_do_zero/shared/app_text_style.dart';
+import 'package:more_devs_do_zero/shared/widgets/app_elevated_button.dart';
+import 'package:more_devs_do_zero/shared/widgets/app_text_field.dart';
+
+class LoginPage extends StatelessWidget {
+  const LoginPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      //Safearea desconta espaços do disposito ex: barra superior
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Spacer(),
+              Text('+DevsEcomm', style: AppTextStyle.title),
+              Spacer(flex: 2),
+              AppTextField(hintText: 'email@dominio.com'),
+              SizedBox(height: 16),
+              AppTextField(hintText: '****************'),
+              TextButton(
+                onPressed: () => {},
+                child: Text('Esqueci minha senha'),
+              ),
+              AppElevatedButton(),
+              AppElevatedButton(),
+              Spacer(flex: 2),
+              //GestureDetector adiciona métodos de interação com usuario ex: onTap
+              GestureDetector(
+                onTap: () {
+                  print('CLIQUEI NA LINHA');
+                },
+                //RichText - Aninhar textos e modificar seu alinhamento
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Termos de Serviço ',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      TextSpan(
+                        text: 'e ',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      TextSpan(
+                        text: 'Politicas de Privacidade',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Spacer(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
