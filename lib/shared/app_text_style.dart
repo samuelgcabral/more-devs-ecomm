@@ -13,4 +13,9 @@ class AppTextStyle {
     color: AppColors.white,
     fontWeight: FontWeight.bold,
   );
+
+  static TextStyle smallBlack = TextStyle(
+    fontWeight: FontWeight.w500,
+    color: AppColors.black,
+  );
 }

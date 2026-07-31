@@ -23,12 +23,27 @@ class LoginPage extends StatelessWidget {
               AppTextField(hintText: 'email@dominio.com'),
               SizedBox(height: 16),
               AppTextField(hintText: '****************'),
-              TextButton(
-                onPressed: () => {},
-                child: Text('Esqueci minha senha'),
+              Align(
+                alignment: AlignmentGeometry.centerRight,
+                child: TextButton(
+                  onPressed: () => {},
+                  child: Text(
+                    'Esqueci minha senha',
+                    style: AppTextStyle.smallBlack,
+                  ),
+                ),
               ),
-              AppElevatedButton(),
-              AppElevatedButton(),
+              AppElevatedButton(
+                label: 'Entrar',
+                onPressed: () => {},
+                type: ButtonType.filled,
+              ),
+              SizedBox(height: 12),
+              AppElevatedButton(
+                label: 'Cadastrar',
+                onPressed: () => {},
+                type: ButtonType.outlined,
+              ),
               Spacer(flex: 2),
               //GestureDetector adiciona métodos de interação com usuario ex: onTap
               GestureDetector(
