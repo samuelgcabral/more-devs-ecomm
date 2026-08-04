@@ -4,7 +4,7 @@ import 'package:more_devs_do_zero/pages/signup_page.dart';
 
 class AppRoutes {
   static final Map<String, WidgetBuilder> routes = {
-    LoginPage.route: (context) => LoginPage(),
-    SignupPage.route: (context) => SignupPage(),
+    LoginPage.route: (context) => const LoginPage(),
+    SignupPage.route: (context) => const SignupPage(),
   };
 }
