@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class SignupPage extends StatelessWidget {
   const SignupPage({super.key});
 
-  static String route = '/signup';
+  static const String route = '/signup';
 
   @override
   Widget build(BuildContext context) {
