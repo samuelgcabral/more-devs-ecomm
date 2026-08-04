@@ -7,7 +7,7 @@ import 'package:more_devs_do_zero/shared/widgets/app_text_field.dart';
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
-  static String route = '/login';
+  static const String route = '/login';
 
   @override
   Widget build(BuildContext context) {
