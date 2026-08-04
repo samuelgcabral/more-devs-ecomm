@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:more_devs_do_zero/pages/signup_page.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_elevated_button.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_text_field.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
+
+  static const String route = '/login';
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +44,9 @@ class LoginPage extends StatelessWidget {
               SizedBox(height: 12),
               AppElevatedButton(
                 label: 'Cadastrar',
-                onPressed: () => {},
+                onPressed: () => {
+                  Navigator.pushNamed(context, SignupPage.route),
+                },
                 type: ButtonType.outlined,
               ),
               Spacer(flex: 2),
