@@ -25,7 +25,7 @@ class LoginPage extends StatelessWidget {
               Spacer(flex: 2),
               AppTextField(hintText: 'email@dominio.com'),
               SizedBox(height: 16),
-              AppTextField(hintText: '****************'),
+              AppTextField(hintText: '****************', obscureText: true),
               Align(
                 alignment: AlignmentGeometry.centerRight,
                 child: TextButton(
