@@ -14,6 +14,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  bool isActiveCheckBox = false;
   String email = '';
   String senha = '';
   bool isActiveButton = false;
@@ -59,6 +60,19 @@ class _LoginPageState extends State<LoginPage> {
                     senha = value;
                   });
                 },
+              ),
+              Row(
+                children: [
+                  Checkbox(
+                    value: isActiveCheckBox,
+                    onChanged: (value) => {
+                      setState(() {
+                        isActiveCheckBox = !isActiveCheckBox;
+                      }),
+                    },
+                  ),
+                  Text('Lembrar-me'),
+                ],
               ),
               Align(
                 alignment: AlignmentGeometry.centerRight,
