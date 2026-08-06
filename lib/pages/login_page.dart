@@ -4,29 +4,13 @@ import 'package:more_devs_do_zero/shared/app_text_style.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_elevated_button.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_text_field.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
   static const String route = '/login';
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  String email = '';
-  String senha = '';
-  bool isActiveButton = false;
-
-  @override
-  initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    isActiveButton = email.trim().isNotEmpty && senha.trim().isNotEmpty;
-
     return Scaffold(
       //Safearea desconta espaços do disposito ex: barra superior
       body: SafeArea(
@@ -42,24 +26,9 @@ class _LoginPageState extends State<LoginPage> {
 
               Center(child: Text('+DevsEcomm', style: AppTextStyle.title)),
               Spacer(flex: 2),
-              AppTextField(
-                hintText: 'email@dominio.com',
-                onChanged: (value) {
-                  setState(() {
-                    email = value;
-                  });
-                },
-              ),
+              AppTextField(hintText: 'email@dominio.com'),
               SizedBox(height: 16),
-              AppTextField(
-                hintText: '****************',
-                obscureText: true,
-                onChanged: (value) {
-                  setState(() {
-                    senha = value;
-                  });
-                },
-              ),
+              AppTextField(hintText: '****************', obscureText: true),
               Align(
                 alignment: AlignmentGeometry.centerRight,
                 child: TextButton(
@@ -72,9 +41,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               AppElevatedButton(
                 label: 'Entrar',
-                onPressed: isActiveButton
-                    ? () => {print('cliquei em entrar')}
-                    : null,
+                onPressed: () => {},
                 type: ButtonType.filled,
               ),
               SizedBox(height: 12),
