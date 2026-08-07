@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:more_devs_do_zero/features/signup/controllers/signup_controller.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
+import 'package:more_devs_do_zero/shared/widgets/app_check_box.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_elevated_button.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_text_field.dart';
 
@@ -13,6 +15,7 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
+  SignupController signupController = SignupController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,45 +45,86 @@ class _SignupPageState extends State<SignupPage> {
               SizedBox(height: 32),
               AppTextField(
                 hintText: 'email@dominio.com',
-                onChanged: (value) {},
+                onChanged: (value) {
+                  setState(() {
+                    signupController.setEmail(value);
+                  });
+                },
               ),
               SizedBox(height: 16),
-              AppTextField(hintText: 'nome'),
-              SizedBox(height: 16),
-              AppTextField(hintText: 'senha', obscureText: true),
-              SizedBox(height: 16),
-              AppTextField(hintText: 'confirmar senha', obscureText: true),
-              Spacer(),
-              GestureDetector(
-                onTap: () {
-                  print('CLIQUEI NA LINHA');
+              AppTextField(
+                hintText: 'nome',
+                onChanged: (value) {
+                  setState(() {
+                    signupController.setNome(value);
+                  });
                 },
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: TextStyle(color: Colors.grey),
-                    children: [
-                      TextSpan(
-                        text:
-                            'Ao clicar em continuar, você concorda com os nossos\n',
-                      ),
-                      TextSpan(
-                        text: 'Termos de Serviço ',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      TextSpan(text: 'e com a '),
-                      TextSpan(
-                        text: 'Politica de Privacidade',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ],
+              ),
+              SizedBox(height: 16),
+              AppTextField(
+                hintText: 'senha',
+                onChanged: (value) {
+                  setState(() {
+                    signupController.setSenha(value);
+                  });
+                },
+                obscureText: true,
+              ),
+              SizedBox(height: 16),
+              AppTextField(
+                hintText: 'confirmar senha',
+                onChanged: (value) {
+                  setState(() {
+                    signupController.setConfirmarSenha(value);
+                  });
+                },
+                obscureText: true,
+              ),
+              Spacer(),
+              Row(
+                children: [
+                  AppCheckBox(
+                    value: signupController.isActiveCheckBox,
+                    onChanged: (value) {
+                      setState(() {
+                        signupController.changeActiveCheckBox();
+                      });
+                    },
                   ),
-                ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        print('CLIQUEI NA LINHA');
+                      },
+                      child: RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          style: TextStyle(color: Colors.grey),
+                          children: [
+                            TextSpan(
+                              text:
+                                  'Ao clicar em continuar, você concorda com os nossos',
+                            ),
+                            TextSpan(
+                              text: 'Termos de Serviço ',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            TextSpan(text: 'e com a '),
+                            TextSpan(
+                              text: 'Politica de Privacidade',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               SizedBox(height: 16),
               AppElevatedButton(
                 label: 'Continuar',
-                onPressed: () => {print('cliquei em continuar')},
+                onPressed: signupController.isActiveButton ? () {} : null,
                 type: ButtonType.filled,
               ),
               SizedBox(height: 16),
