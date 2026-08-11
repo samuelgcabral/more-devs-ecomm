@@ -46,6 +46,7 @@ class _LoginPageState extends State<LoginPage> {
                   Center(child: Text('+DevsEcomm', style: AppTextStyle.title)),
                   Spacer(flex: 2),
                   AppTextField(
+                    errorText: loginController.emailError,
                     hintText: 'email@dominio.com',
                     onChanged: (value) {
                       setState(() {
@@ -55,6 +56,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   SizedBox(height: 16),
                   AppTextField(
+                    errorText: loginController.senhaError,
                     hintText: '****************',
                     obscureText: true,
                     onChanged: (value) {
