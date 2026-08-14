@@ -3,6 +3,7 @@ import 'package:more_devs_do_zero/features/signup/controllers/signup_controller.
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_check_box.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_elevated_button.dart';
+import 'package:more_devs_do_zero/shared/widgets/app_required_password.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_text_field.dart';
 
 class SignupPage extends StatefulWidget {
@@ -80,6 +81,12 @@ class _SignupPageState extends State<SignupPage> {
                 },
                 obscureText: true,
               ),
+              for (var requiremnt in signupController.getPasswordRequirements())
+                AppRequiredPassword(
+                  atendido: requiremnt.values.first,
+                  text: requiremnt.keys.first,
+                ),
+
               Spacer(),
               Row(
                 children: [
