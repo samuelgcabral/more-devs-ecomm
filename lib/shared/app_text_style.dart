@@ -18,4 +18,14 @@ class AppTextStyle {
     fontWeight: FontWeight.w500,
     color: AppColors.black,
   );
+
+  static TextStyle smallGrey = TextStyle(
+    fontWeight: FontWeight.w500,
+    color: AppColors.grey,
+  );
+
+  static TextStyle smallGreen = TextStyle(
+    fontWeight: FontWeight.w500,
+    color: AppColors.green,
+  );
 }

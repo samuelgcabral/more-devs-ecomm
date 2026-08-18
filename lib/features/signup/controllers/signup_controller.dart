@@ -26,17 +26,36 @@ class SignupController {
     changeActiveButton();
   }
 
+  List<Map<String, bool>> getPasswordRequirements() {
+    return [
+      {'Mínimo de 6 caracteres': minSeisCaracteres},
+      {'No mínimo um caracter especial': possuiCaractereEspecial},
+    ];
+  }
+
   void changeActiveButton() {
     isActiveButton =
         email.trim().isNotEmpty &&
         nome.trim().isNotEmpty &&
         senha.trim().isNotEmpty &&
         confirmarSenha.trim().isNotEmpty &&
-        isActiveCheckBox;
+        isActiveCheckBox &&
+        minSeisCaracteres &&
+        possuiCaractereEspecial &&
+        possuiLetraMaiuscula &&
+        possuiLetraMinuscula &&
+        senhasCoincidentes;
   }
 
   void changeActiveCheckBox() {
     isActiveCheckBox = !isActiveCheckBox;
     changeActiveButton();
   }
+
+  bool get possuiLetraMaiuscula => senha.contains(RegExp(r'[A-Z]'));
+  bool get possuiLetraMinuscula => senha.contains(RegExp(r'[a-z]'));
+  bool get senhasCoincidentes => senha == confirmarSenha && senha.isNotEmpty;
+  bool get minSeisCaracteres => senha.length >= 6;
+  bool get possuiCaractereEspecial =>
+      senha.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
 }
