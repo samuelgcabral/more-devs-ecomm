@@ -6,6 +6,7 @@ class LoginController {
   String email = '';
   String senha = '';
   bool isActiveButton = false;
+  bool isLoading = false;
 
   bool get isEmailValid => _emailRegex.hasMatch(email.trim());
   bool get isSenhaValid => senha.trim().length >= _caracterMinimoSenha;
@@ -38,5 +39,10 @@ class LoginController {
 
   void changeActiveCheckBox() {
     isActiveCheckBox = !isActiveCheckBox;
+  }
+
+  Future<void> login() async {
+    //Simula chamada da API
+    await Future.delayed(const Duration(seconds: 2));
   }
 }
