@@ -30,6 +30,9 @@ class SignupController {
     return [
       {'Mínimo de 6 caracteres': minSeisCaracteres},
       {'No mínimo um caracter especial': possuiCaractereEspecial},
+      {'No mínimo uma letra maiúscula': possuiLetraMaiuscula},
+      {'No mínimo uma letra minúscula': possuiLetraMinuscula},
+      {'Senhas coincidem': senhasCoincidentes},
     ];
   }
 
