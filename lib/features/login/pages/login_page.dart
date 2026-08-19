@@ -27,8 +27,15 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _handleLogin() async {
     if (key.currentState!.validate()) {
-      loginController.emailController.text;
-      loginController.senhaController.text;
+      setState(() {
+        loginController.isLoading = true;
+      });
+
+      await loginController.login();
+      print('Executei o login do controller');
+      setState(() {
+        loginController.isLoading = false;
+      });
     }
   }
 
