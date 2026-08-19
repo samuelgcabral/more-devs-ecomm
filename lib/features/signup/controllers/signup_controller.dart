@@ -5,6 +5,7 @@ class SignupController {
   String senha = '';
   String confirmarSenha = '';
   bool isActiveButton = false;
+  bool isLoading = false;
 
   void setEmail(String emailParam) {
     email = emailParam;
@@ -53,6 +54,10 @@ class SignupController {
   void changeActiveCheckBox() {
     isActiveCheckBox = !isActiveCheckBox;
     changeActiveButton();
+  }
+
+  Future<void> signUp() async {
+    await Future.delayed(Duration(seconds: 2));
   }
 
   bool get possuiLetraMaiuscula => senha.contains(RegExp(r'[A-Z]'));

@@ -18,6 +18,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   LoginController loginController = LoginController();
+  final GlobalKey<FormState> key = GlobalKey<FormState>();
 
   @override
   initState() {
@@ -25,16 +26,19 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleLogin() async {
+    if (key.currentState!.validate()) {
+      setState(() {
+        loginController.isLoading = true;
+      });
+
+      await loginController.login();
+      print('Executei o login do controller');
+      setState(() {
+        loginController.isLoading = false;
+      });
+    }
     //futuramente não será necessário o setState, pois a tela será
     //reconstruida com o provider
-    setState(() {
-      loginController.isLoading = true;
-    });
-
-    await loginController.login();
-    setState(() {
-      loginController.isLoading = false;
-    });
   }
 
   @override
@@ -43,113 +47,117 @@ class _LoginPageState extends State<LoginPage> {
       //Safearea desconta espaços do disposito ex: barra superior
       body: SafeArea(
         child: SingleChildScrollView(
-          child: SizedBox(
-            height:
-                MediaQuery.of(context).size.height -
-                MediaQuery.of(context).padding.top,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Spacer(),
+          child: Form(
+            key: key,
+            child: SizedBox(
+              height:
+                  MediaQuery.of(context).size.height -
+                  MediaQuery.of(context).padding.top,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Spacer(),
 
-                  Image.asset('assets/images/logo.png', height: 120),
+                    Image.asset('assets/images/logo.png', height: 120),
 
-                  Center(child: Text('+DevsEcomm', style: AppTextStyle.title)),
-                  Spacer(flex: 2),
-                  AppTextField(
-                    errorText: loginController.emailError,
-                    hintText: 'email@dominio.com',
-                    onChanged: (value) {
-                      setState(() {
-                        loginController.setEmail(value);
-                      });
-                    },
-                  ),
-                  SizedBox(height: 16),
-                  AppTextField(
-                    errorText: loginController.senhaError,
-                    hintText: '****************',
-                    obscureText: true,
-                    onChanged: (value) {
-                      setState(() {
-                        loginController.setSenha(value);
-                      });
-                    },
-                  ),
-
-                  Row(
-                    children: [
-                      AppCheckBox(
-                        value: loginController.isActiveCheckBox,
-                        onChanged: (value) => {
-                          setState(() {
-                            loginController.changeActiveCheckBox();
-                          }),
-                        },
-                      ),
-                      Text('Lembrar-me'),
-                    ],
-                  ),
-                  Align(
-                    alignment: AlignmentGeometry.centerRight,
-                    child: TextButton(
-                      onPressed: () => {
-                        Navigator.pushNamed(context, RecoverPage.route),
+                    Center(
+                      child: Text('+DevsEcomm', style: AppTextStyle.title),
+                    ),
+                    Spacer(flex: 2),
+                    AppTextField(
+                      validator: (value) {
+                        return loginController.validateEmail(value);
                       },
-                      child: Text(
-                        'Esqueci minha senha',
-                        style: AppTextStyle.smallBlack,
+                      hintText: 'email@dominio.com',
+                      onChanged: (value) {
+                        setState(() {
+                          loginController.setEmail(value);
+                        });
+                      },
+                    ),
+                    SizedBox(height: 16),
+                    AppTextField(
+                      hintText: '****************',
+                      obscureText: true,
+                      onChanged: (value) {
+                        setState(() {
+                          loginController.setSenha(value);
+                        });
+                      },
+                    ),
+
+                    Row(
+                      children: [
+                        AppCheckBox(
+                          value: loginController.isActiveCheckBox,
+                          onChanged: (value) => {
+                            setState(() {
+                              loginController.changeActiveCheckBox();
+                            }),
+                          },
+                        ),
+                        Text('Lembrar-me'),
+                      ],
+                    ),
+                    Align(
+                      alignment: AlignmentGeometry.centerRight,
+                      child: TextButton(
+                        onPressed: () => {
+                          Navigator.pushNamed(context, RecoverPage.route),
+                        },
+                        child: Text(
+                          'Esqueci minha senha',
+                          style: AppTextStyle.smallBlack,
+                        ),
                       ),
                     ),
-                  ),
-                  AppElevatedButton(
-                    label: 'Entrar',
-                    isLoading: loginController.isLoading,
-                    onPressed: loginController.isActiveButton
-                        ? _handleLogin
-                        : null,
-                    type: ButtonType.filled,
-                  ),
-                  SizedBox(height: 12),
-                  AppElevatedButton(
-                    label: 'Cadastrar',
-                    onPressed: () => {
-                      Navigator.pushNamed(context, SignupPage.route),
-                    },
-                    type: ButtonType.outlined,
-                  ),
-                  Spacer(flex: 2),
-                  //GestureDetector adiciona métodos de interação com usuario ex: onTap
-                  GestureDetector(
-                    onTap: () {
-                      print('CLIQUEI NA LINHA');
-                    },
-                    //RichText - Aninhar textos e modificar seu alinhamento
-                    child: RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Termos de Serviço ',
-                            style: TextStyle(color: Colors.black),
-                          ),
-                          TextSpan(
-                            text: 'e ',
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                          TextSpan(
-                            text: 'Politicas de Privacidade',
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        ],
+                    AppElevatedButton(
+                      label: 'Entrar',
+                      isLoading: loginController.isLoading,
+                      onPressed: _handleLogin,
+                      type: ButtonType.filled,
+                    ),
+                    SizedBox(height: 12),
+                    AppElevatedButton(
+                      label: 'Cadastrar',
+                      onPressed: () => {
+                        Navigator.pushNamed(context, SignupPage.route),
+                      },
+                      type: ButtonType.outlined,
+                    ),
+                    Spacer(flex: 2),
+                    //GestureDetector adiciona métodos de interação com usuario ex: onTap
+                    GestureDetector(
+                      onTap: () {
+                        print('CLIQUEI NA LINHA');
+                      },
+                      //RichText - Aninhar textos e modificar seu alinhamento
+                      child: RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Termos de Serviço ',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            TextSpan(
+                              text: 'e ',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                            TextSpan(
+                              text: 'Politicas de Privacidade',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  Spacer(),
-                ],
+                    Spacer(),
+                  ],
+                ),
               ),
             ),
           ),

@@ -131,7 +131,20 @@ class _SignupPageState extends State<SignupPage> {
               SizedBox(height: 16),
               AppElevatedButton(
                 label: 'Continuar',
-                onPressed: signupController.isActiveButton ? () {} : null,
+                isLoading: signupController.isLoading,
+                onPressed: signupController.isActiveButton
+                    ? () async {
+                        setState(() {
+                          signupController.isLoading = true;
+                        });
+
+                        await signupController.signUp();
+
+                        setState(() {
+                          signupController.isLoading = false;
+                        });
+                      }
+                    : null,
                 type: ButtonType.filled,
               ),
               SizedBox(height: 16),

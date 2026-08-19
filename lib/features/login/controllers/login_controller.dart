@@ -44,5 +44,13 @@ class LoginController {
   Future<void> login() async {
     //Simula chamada da API
     await Future.delayed(const Duration(seconds: 2));
+    print('Login realizado com sucesso');
+  }
+
+  String? validateEmail(String? value) {
+    if (_emailRegex.hasMatch(email)) {
+      return null;
+    }
+    return 'E-mail inválido';
   }
 }
