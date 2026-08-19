@@ -27,18 +27,9 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _handleLogin() async {
     if (key.currentState!.validate()) {
-      setState(() {
-        loginController.isLoading = true;
-      });
-
-      await loginController.login();
-      print('Executei o login do controller');
-      setState(() {
-        loginController.isLoading = false;
-      });
+      loginController.emailController.text;
+      loginController.senhaController.text;
     }
-    //futuramente não será necessário o setState, pois a tela será
-    //reconstruida com o provider
   }
 
   @override
@@ -47,14 +38,14 @@ class _LoginPageState extends State<LoginPage> {
       //Safearea desconta espaços do disposito ex: barra superior
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Form(
-            key: key,
-            child: SizedBox(
-              height:
-                  MediaQuery.of(context).size.height -
-                  MediaQuery.of(context).padding.top,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: SizedBox(
+            height:
+                MediaQuery.of(context).size.height -
+                MediaQuery.of(context).padding.top,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Form(
+                key: key,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -68,28 +59,20 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     Spacer(flex: 2),
                     AppTextField(
+                      controller: loginController.emailController,
                       validator: (value) {
                         return loginController.validateEmail(value);
                       },
                       hintText: 'email@dominio.com',
-                      onChanged: (value) {
-                        setState(() {
-                          loginController.setEmail(value);
-                        });
-                      },
                     ),
                     SizedBox(height: 16),
                     AppTextField(
+                      controller: loginController.senhaController,
                       validator: (value) {
                         return loginController.validateSenha(value);
                       },
                       hintText: '****************',
                       obscureText: true,
-                      onChanged: (value) {
-                        setState(() {
-                          loginController.setSenha(value);
-                        });
-                      },
                     ),
 
                     Row(
