@@ -53,4 +53,11 @@ class LoginController {
     }
     return 'E-mail inválido';
   }
+
+  String? validateSenha(String? value) {
+    if (senha.length >= _caracterMinimoSenha) {
+      return null;
+    }
+    return 'Senha inválida';
+  }
 }

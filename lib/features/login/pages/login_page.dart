@@ -80,6 +80,9 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     SizedBox(height: 16),
                     AppTextField(
+                      validator: (value) {
+                        return loginController.validateSenha(value);
+                      },
                       hintText: '****************',
                       obscureText: true,
                       onChanged: (value) {
