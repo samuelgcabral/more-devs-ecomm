@@ -1,31 +1,16 @@
+import 'package:flutter/material.dart';
+
 class SignupController {
+  final RegExp _emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+
+  TextEditingController emailController = TextEditingController();
+  TextEditingController nomeController = TextEditingController();
+  TextEditingController senhaController = TextEditingController();
+  TextEditingController confirmarSenhaController = TextEditingController();
+
   bool isActiveCheckBox = false;
-  String email = '';
-  String nome = '';
-  String senha = '';
-  String confirmarSenha = '';
-  bool isActiveButton = false;
+  bool checkBoxError = false;
   bool isLoading = false;
-
-  void setEmail(String emailParam) {
-    email = emailParam;
-    changeActiveButton();
-  }
-
-  void setNome(String nomeParam) {
-    nome = nomeParam;
-    changeActiveButton();
-  }
-
-  void setSenha(String senhaParam) {
-    senha = senhaParam;
-    changeActiveButton();
-  }
-
-  void setConfirmarSenha(String confirmarSenhaParam) {
-    confirmarSenha = confirmarSenhaParam;
-    changeActiveButton();
-  }
 
   List<Map<String, bool>> getPasswordRequirements() {
     return [
@@ -37,33 +22,61 @@ class SignupController {
     ];
   }
 
-  void changeActiveButton() {
-    isActiveButton =
-        email.trim().isNotEmpty &&
-        nome.trim().isNotEmpty &&
-        senha.trim().isNotEmpty &&
-        confirmarSenha.trim().isNotEmpty &&
-        isActiveCheckBox &&
-        minSeisCaracteres &&
-        possuiCaractereEspecial &&
-        possuiLetraMaiuscula &&
-        possuiLetraMinuscula &&
-        senhasCoincidentes;
-  }
-
   void changeActiveCheckBox() {
     isActiveCheckBox = !isActiveCheckBox;
-    changeActiveButton();
+    if (isActiveCheckBox) {
+      checkBoxError = false;
+    }
+  }
+
+  bool validateCheckBox() {
+    checkBoxError = !isActiveCheckBox;
+    return isActiveCheckBox;
   }
 
   Future<void> signUp() async {
     await Future.delayed(Duration(seconds: 2));
   }
 
-  bool get possuiLetraMaiuscula => senha.contains(RegExp(r'[A-Z]'));
-  bool get possuiLetraMinuscula => senha.contains(RegExp(r'[a-z]'));
-  bool get senhasCoincidentes => senha == confirmarSenha && senha.isNotEmpty;
-  bool get minSeisCaracteres => senha.length >= 6;
+  String? validateEmail(String? value) {
+    if (_emailRegex.hasMatch(emailController.text.trim())) {
+      return null;
+    }
+    return 'E-mail inválido';
+  }
+
+  String? validateNome(String? value) {
+    if (nomeController.text.trim().isNotEmpty) {
+      return null;
+    }
+    return 'Nome inválido';
+  }
+
+  String? validateSenha(String? value) {
+    if (minSeisCaracteres &&
+        possuiCaractereEspecial &&
+        possuiLetraMaiuscula &&
+        possuiLetraMinuscula) {
+      return null;
+    }
+    return 'Senha não atende aos requisitos';
+  }
+
+  String? validateConfirmarSenha(String? value) {
+    if (senhasCoincidentes) {
+      return null;
+    }
+    return 'As senhas não coincidem';
+  }
+
+  bool get possuiLetraMaiuscula =>
+      senhaController.text.contains(RegExp(r'[A-Z]'));
+  bool get possuiLetraMinuscula =>
+      senhaController.text.contains(RegExp(r'[a-z]'));
+  bool get senhasCoincidentes =>
+      senhaController.text == confirmarSenhaController.text &&
+      senhaController.text.isNotEmpty;
+  bool get minSeisCaracteres => senhaController.text.length >= 6;
   bool get possuiCaractereEspecial =>
-      senha.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+      senhaController.text.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
 }

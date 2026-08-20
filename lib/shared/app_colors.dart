@@ -7,4 +7,5 @@ class AppColors {
   static final Color grey100 = Color(0xFFE0E0E0);
   static final Color grey = Colors.grey;
   static final Color green = Colors.green;
+  static final Color red = Colors.red;
 }
