@@ -18,14 +18,15 @@ class LoginPage extends StatelessWidget {
     return Scaffold(
       //Safearea desconta espaços do disposito ex: barra superior
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Consumer<LoginController>(
-            builder: (context, controller, child) {
-              return SizedBox(
-                height:
-                    MediaQuery.of(context).size.height -
-                    MediaQuery.of(context).padding.top,
-                child: Padding(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              physics: const ClampingScrollPhysics(),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Consumer<LoginController>(
+                  builder: (context, controller, child) {
+                    return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Form(
                     key: controller.key,
@@ -127,10 +128,12 @@ class LoginPage extends StatelessWidget {
                       ],
                     ),
                   ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
