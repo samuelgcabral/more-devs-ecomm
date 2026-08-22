@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 
+class User {
+  final String nome;
+  final String email;
+
+  User({required this.nome, required this.email});
+}
+
 class LoginController extends ChangeNotifier {
   final RegExp _emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
   final int _caracterMinimoSenha = 6;
@@ -8,6 +15,8 @@ class LoginController extends ChangeNotifier {
   final GlobalKey<FormState> key = GlobalKey<FormState>();
 
   bool isActiveCheckBox = false;
+
+  User? user;
 
   bool isLoading = false;
 
@@ -28,13 +37,17 @@ class LoginController extends ChangeNotifier {
       await login();
       isLoading = false;
       notifyListeners();
+      emailController.clear();
+      senhaController.clear();
+      return;
     }
+    throw ErrorDescription('validacao_incorreta');
   }
 
   Future<void> login() async {
     //Simula chamada da API
     await Future.delayed(const Duration(seconds: 2));
-    print('Login realizado com sucesso');
+    user = User(nome: 'Vitor', email: emailController.text);
   }
 
   String? validateEmail(String? value) {
