@@ -11,8 +11,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leadingWidth: 100,
-        leading: Consumer<LoginController>(
+        title: Consumer<LoginController>(
           builder: (context, loginController, child) {
             return Text(
               'Olá ${loginController.user!.nome}',
