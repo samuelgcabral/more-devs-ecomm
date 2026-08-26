@@ -36,7 +36,26 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Consumer<HomeController>(
         builder: (context, homeController, child) {
-          return Column(children: [SizedBox(height: 108)]);
+          return Column(
+            children: [
+              SizedBox(
+                height: 108,
+                child: switch (homeController.categoriesState) {
+                  CategoriesViewState.loading => Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                  CategoriesViewState.error => Text(
+                    'Problema ao resgatar categorias',
+                  ),
+                  CategoriesViewState.success => Container(
+                    color: Colors.red,
+                    width: 100,
+                    height: 100,
+                  ),
+                },
+              ),
+            ],
+          );
         },
       ),
     );
