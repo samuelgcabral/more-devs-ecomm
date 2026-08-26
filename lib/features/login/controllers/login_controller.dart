@@ -35,12 +35,13 @@ class LoginController extends ChangeNotifier {
     }
 
     changeIsLoading(true);
-
-    await login();
-    changeIsLoading(false);
-    emailController.clear();
-    senhaController.clear();
-    return;
+    try {
+      await login();
+      emailController.clear();
+      senhaController.clear();
+    } finally {
+      changeIsLoading(false);
+    }
   }
 
   Future<void> login() async {
