@@ -35,10 +35,6 @@ class SignupController {
     }
   }
 
-  Future<void> signUp() async {
-    await Future.delayed(Duration(seconds: 2));
-  }
-
   String? validateEmail(String? value) {
     if (_emailRegex.hasMatch(emailController.text.trim())) {
       return null;
@@ -80,4 +76,11 @@ class SignupController {
   bool get minSeisCaracteres => senhaController.text.length >= 6;
   bool get possuiCaractereEspecial =>
       senhaController.text.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+
+  void dispose() {
+    emailController.dispose();
+    nomeController.dispose();
+    senhaController.dispose();
+    confirmarSenhaController.dispose();
+  }
 }

@@ -116,8 +116,27 @@ class LoginPage extends StatelessWidget {
                             SizedBox(height: 12),
                             AppElevatedButton(
                               label: 'Cadastrar',
-                              onPressed: () => {
-                                Navigator.pushNamed(context, SignupPage.route),
+                              onPressed: () async {
+                                final signupSucceeded =
+                                    await Navigator.push<bool>(
+                                      context,
+                                      MaterialPageRoute<bool>(
+                                        builder: (context) =>
+                                            const SignupPage(),
+                                      ),
+                                    );
+
+                                if (!context.mounted ||
+                                    signupSucceeded != true) {
+                                  return;
+                                }
+
+                                AnimatedSnackBar.material(
+                                  'Cadastro realizado com sucesso. Faça login com as credenciais inseridas.',
+                                  type: AnimatedSnackBarType.success,
+                                  mobileSnackBarPosition:
+                                      MobileSnackBarPosition.bottom,
+                                ).show(context);
                               },
                               type: ButtonType.outlined,
                             ),

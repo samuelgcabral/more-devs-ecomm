@@ -1,30 +1,59 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:more_devs_do_zero/main.dart';
+import 'package:more_devs_do_zero/features/login/controllers/login_controller.dart';
+import 'package:more_devs_do_zero/shared/exceptions/auth_exception.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  late LoginController controller;
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  setUp(() {
+    controller = LoginController(simulatedDelay: Duration.zero);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  tearDown(() {
+    controller.dispose();
+  });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  test('a newly registered user can log in', () async {
+    await controller.registerUser(
+      nome: 'Maria',
+      email: 'MARIA@EXAMPLE.COM',
+      senha: 'Senha@123',
+    );
+
+    controller.emailController.text = 'maria@example.com';
+    controller.senhaController.text = 'Senha@123';
+    await controller.login();
+
+    expect(controller.user?.nome, 'Maria');
+    expect(controller.user?.email, 'maria@example.com');
+  });
+
+  test('registering the same email twice is rejected', () async {
+    await controller.registerUser(
+      nome: 'Maria',
+      email: 'maria@example.com',
+      senha: 'Senha@123',
+    );
+
+    expect(
+      () => controller.registerUser(
+        nome: 'Outra Maria',
+        email: 'maria@example.com',
+        senha: 'Outra@123',
+      ),
+      throwsA(isA<AuthException>()),
+    );
+  });
+
+  test('an incorrect password is rejected', () async {
+    await controller.registerUser(
+      nome: 'Maria',
+      email: 'maria@example.com',
+      senha: 'Senha@123',
+    );
+    controller.emailController.text = 'maria@example.com';
+    controller.senhaController.text = 'senha-errada';
+
+    expect(controller.login, throwsA(isA<AuthException>()));
   });
 }
