@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:more_devs_do_zero/features/auth/services/auth_service.dart';
 import 'package:more_devs_do_zero/features/home/controllers/home_controller.dart';
 import 'package:more_devs_do_zero/features/login/controllers/login_controller.dart';
 import 'package:more_devs_do_zero/features/login/pages/login_page.dart';
@@ -16,9 +17,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider(create: (context) => AuthService()),
         ChangeNotifierProvider(
           create: (context) {
-            return LoginController()..loadRememberedEmail();
+            return LoginController(context.read<AuthService>())
+              ..loadRememberedEmail();
           },
         ),
         ChangeNotifierProvider(
@@ -29,6 +32,7 @@ class MyApp extends StatelessWidget {
       ],
       builder: (context, child) {
         return MaterialApp(
+          debugShowCheckedModeBanner: false,
           routes: AppRoutes.routes,
           initialRoute: LoginPage.route,
         );

@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:more_devs_do_zero/features/auth/services/auth_service.dart';
 import 'package:more_devs_do_zero/features/login/model/user.dart';
 import 'package:more_devs_do_zero/features/login/services/remember_me_service.dart';
-import 'package:more_devs_do_zero/shared/exceptions/auth_exception.dart';
 
 class LoginController extends ChangeNotifier {
-  LoginController({
-    this.simulatedDelay = const Duration(seconds: 2),
-    RememberMeStorage? rememberMeStorage,
-  }) : _rememberMeStorage = rememberMeStorage ?? RememberMeService();
+  LoginController(this._authService, {RememberMeStorage? rememberMeStorage})
+    : _rememberMeStorage = rememberMeStorage ?? RememberMeService();
 
-  final Duration simulatedDelay;
+  final AuthService _authService;
   final RememberMeStorage _rememberMeStorage;
   final RegExp _emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
   final int _caracterMinimoSenha = 6;
@@ -22,10 +20,6 @@ class LoginController extends ChangeNotifier {
   User? user;
 
   bool isLoading = false;
-
-  final Map<String, ({String nome, String senha})> _registeredUsers = {
-    'vitor6890@gmail.com': (nome: 'Vitor', senha: '123456'),
-  };
 
   bool get isEmailValid => _emailRegex.hasMatch(emailController.text.trim());
   bool get isSenhaValid =>
@@ -71,16 +65,10 @@ class LoginController extends ChangeNotifier {
   }
 
   Future<void> login() async {
-    //Simula chamada da API
-    await Future.delayed(simulatedDelay);
-    final email = emailController.text.trim().toLowerCase();
-    final registeredUser = _registeredUsers[email];
-
-    if (registeredUser == null ||
-        senhaController.text != registeredUser.senha) {
-      throw AuthException('E-mail ou senha incorretos');
-    }
-    user = User(nome: registeredUser.nome, email: email);
+    user = await _authService.login(
+      email: emailController.text,
+      senha: senhaController.text,
+    );
     await _updateRememberedEmail();
   }
 
@@ -92,21 +80,6 @@ class LoginController extends ChangeNotifier {
     } else {
       await _rememberMeStorage.clearEmail();
     }
-  }
-
-  Future<void> registerUser({
-    required String nome,
-    required String email,
-    required String senha,
-  }) async {
-    await Future.delayed(simulatedDelay);
-    final normalizedEmail = email.trim().toLowerCase();
-
-    if (_registeredUsers.containsKey(normalizedEmail)) {
-      throw AuthException('Este e-mail já está cadastrado');
-    }
-
-    _registeredUsers[normalizedEmail] = (nome: nome.trim(), senha: senha);
   }
 
   String? validateEmail(String? value) {

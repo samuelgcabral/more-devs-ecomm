@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:more_devs_do_zero/features/auth/services/auth_service.dart';
 import 'package:more_devs_do_zero/features/login/controllers/login_controller.dart';
 import 'package:more_devs_do_zero/features/login/services/remember_me_service.dart';
 import 'package:more_devs_do_zero/shared/exceptions/auth_exception.dart';
@@ -18,12 +19,14 @@ class MemoryRememberMeStorage implements RememberMeStorage {
 
 void main() {
   late LoginController controller;
+  late AuthService authService;
   late MemoryRememberMeStorage rememberMeStorage;
 
   setUp(() {
     rememberMeStorage = MemoryRememberMeStorage();
+    authService = AuthService(simulatedDelay: Duration.zero);
     controller = LoginController(
-      simulatedDelay: Duration.zero,
+      authService,
       rememberMeStorage: rememberMeStorage,
     );
   });
@@ -33,7 +36,7 @@ void main() {
   });
 
   test('a newly registered user can log in', () async {
-    await controller.registerUser(
+    await authService.registerUser(
       nome: 'Maria',
       email: 'MARIA@EXAMPLE.COM',
       senha: 'Senha@123',
@@ -48,14 +51,14 @@ void main() {
   });
 
   test('registering the same email twice is rejected', () async {
-    await controller.registerUser(
+    await authService.registerUser(
       nome: 'Maria',
       email: 'maria@example.com',
       senha: 'Senha@123',
     );
 
     expect(
-      () => controller.registerUser(
+      () => authService.registerUser(
         nome: 'Outra Maria',
         email: 'maria@example.com',
         senha: 'Outra@123',
@@ -65,7 +68,7 @@ void main() {
   });
 
   test('an incorrect password is rejected', () async {
-    await controller.registerUser(
+    await authService.registerUser(
       nome: 'Maria',
       email: 'maria@example.com',
       senha: 'Senha@123',
