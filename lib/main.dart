@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (context) {
-            return LoginController();
+            return LoginController()..loadRememberedEmail();
           },
         ),
         ChangeNotifierProvider(

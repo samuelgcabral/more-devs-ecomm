@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/login/model/user.dart';
+import 'package:more_devs_do_zero/features/login/services/remember_me_service.dart';
 import 'package:more_devs_do_zero/shared/exceptions/auth_exception.dart';
 
 class LoginController extends ChangeNotifier {
-  LoginController({Duration simulatedDelay = const Duration(seconds: 2)})
-    : _simulatedDelay = simulatedDelay;
+  LoginController({
+    this.simulatedDelay = const Duration(seconds: 2),
+    RememberMeStorage? rememberMeStorage,
+  }) : _rememberMeStorage = rememberMeStorage ?? RememberMeService();
 
-  final Duration _simulatedDelay;
+  final Duration simulatedDelay;
+  final RememberMeStorage _rememberMeStorage;
   final RegExp _emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
   final int _caracterMinimoSenha = 6;
   TextEditingController emailController = TextEditingController();
@@ -27,9 +31,23 @@ class LoginController extends ChangeNotifier {
   bool get isSenhaValid =>
       senhaController.text.trim().length >= _caracterMinimoSenha;
 
-  void changeActiveCheckBox() {
+  Future<void> loadRememberedEmail() async {
+    final rememberedEmail = await _rememberMeStorage.readEmail();
+
+    if (rememberedEmail == null || rememberedEmail.isEmpty) return;
+
+    emailController.text = rememberedEmail;
+    isActiveCheckBox = true;
+    notifyListeners();
+  }
+
+  Future<void> changeActiveCheckBox() async {
     isActiveCheckBox = !isActiveCheckBox;
     notifyListeners();
+
+    if (!isActiveCheckBox) {
+      await _rememberMeStorage.clearEmail();
+    }
   }
 
   void changeIsLoading(bool value) {
@@ -45,7 +63,7 @@ class LoginController extends ChangeNotifier {
     changeIsLoading(true);
     try {
       await login();
-      emailController.clear();
+      if (!isActiveCheckBox) emailController.clear();
       senhaController.clear();
     } finally {
       changeIsLoading(false);
@@ -54,7 +72,7 @@ class LoginController extends ChangeNotifier {
 
   Future<void> login() async {
     //Simula chamada da API
-    await Future.delayed(_simulatedDelay);
+    await Future.delayed(simulatedDelay);
     final email = emailController.text.trim().toLowerCase();
     final registeredUser = _registeredUsers[email];
 
@@ -63,6 +81,17 @@ class LoginController extends ChangeNotifier {
       throw AuthException('E-mail ou senha incorretos');
     }
     user = User(nome: registeredUser.nome, email: email);
+    await _updateRememberedEmail();
+  }
+
+  Future<void> _updateRememberedEmail() async {
+    if (isActiveCheckBox) {
+      await _rememberMeStorage.saveEmail(
+        emailController.text.trim().toLowerCase(),
+      );
+    } else {
+      await _rememberMeStorage.clearEmail();
+    }
   }
 
   Future<void> registerUser({
@@ -70,17 +99,14 @@ class LoginController extends ChangeNotifier {
     required String email,
     required String senha,
   }) async {
-    await Future.delayed(_simulatedDelay);
+    await Future.delayed(simulatedDelay);
     final normalizedEmail = email.trim().toLowerCase();
 
     if (_registeredUsers.containsKey(normalizedEmail)) {
       throw AuthException('Este e-mail já está cadastrado');
     }
 
-    _registeredUsers[normalizedEmail] = (
-      nome: nome.trim(),
-      senha: senha,
-    );
+    _registeredUsers[normalizedEmail] = (nome: nome.trim(), senha: senha);
   }
 
   String? validateEmail(String? value) {
