@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:more_devs_do_zero/features/auth/models/registered_user.dart';
 import 'package:more_devs_do_zero/features/auth/services/auth_service.dart';
+import 'package:more_devs_do_zero/features/auth/services/auth_storage.dart';
 import 'package:more_devs_do_zero/features/login/controllers/login_controller.dart';
 import 'package:more_devs_do_zero/features/login/services/remember_me_service.dart';
 import 'package:more_devs_do_zero/shared/exceptions/auth_exception.dart';
@@ -17,14 +19,31 @@ class MemoryRememberMeStorage implements RememberMeStorage {
   Future<void> saveEmail(String email) async => this.email = email;
 }
 
+class MemoryAuthStorage implements AuthStorage {
+  List<RegisteredUser> users = [];
+
+  @override
+  Future<List<RegisteredUser>> readUsers() async => List.of(users);
+
+  @override
+  Future<void> saveUsers(List<RegisteredUser> users) async {
+    this.users = List.of(users);
+  }
+}
+
 void main() {
   late LoginController controller;
   late AuthService authService;
+  late MemoryAuthStorage authStorage;
   late MemoryRememberMeStorage rememberMeStorage;
 
   setUp(() {
     rememberMeStorage = MemoryRememberMeStorage();
-    authService = AuthService(simulatedDelay: Duration.zero);
+    authStorage = MemoryAuthStorage();
+    authService = AuthService(
+      simulatedDelay: Duration.zero,
+      storage: authStorage,
+    );
     controller = LoginController(
       authService,
       rememberMeStorage: rememberMeStorage,
@@ -107,4 +126,27 @@ void main() {
     expect(rememberMeStorage.email, isNull);
     expect(controller.isActiveCheckBox, isFalse);
   });
+
+  test(
+    'a registered user remains available in a new service instance',
+    () async {
+      await authService.registerUser(
+        nome: 'Maria',
+        email: 'maria@example.com',
+        senha: 'Senha@123',
+      );
+      final restartedAuthService = AuthService(
+        simulatedDelay: Duration.zero,
+        storage: authStorage,
+      );
+
+      final user = await restartedAuthService.login(
+        email: 'maria@example.com',
+        senha: 'Senha@123',
+      );
+
+      expect(user.nome, 'Maria');
+      expect(user.email, 'maria@example.com');
+    },
+  );
 }

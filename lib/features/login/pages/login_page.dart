@@ -143,9 +143,7 @@ class LoginPage extends StatelessWidget {
                             SizedBox(height: 48),
                             //GestureDetector adiciona métodos de interação com usuario ex: onTap
                             GestureDetector(
-                              onTap: () {
-                                print('CLIQUEI NA LINHA');
-                              },
+                              onTap: null,
                               //RichText - Aninhar textos e modificar seu alinhamento
                               child: RichText(
                                 textAlign: TextAlign.center,
