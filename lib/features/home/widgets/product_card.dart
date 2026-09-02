@@ -10,34 +10,27 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 150,
-      margin: EdgeInsets.symmetric(horizontal: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Skeleton.replace(
-              width: 150,
-              height: 150,
-              child: Image.network(
-                product.imageUrl,
-                height: 150,
-                width: 150,
-                fit: BoxFit.cover,
-              ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Skeleton.replace(
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: Image.network(product.imageUrl, fit: BoxFit.cover),
             ),
           ),
-          SizedBox(height: 8),
-          Text(product.brand, style: AppTextStyle.smallGrey),
-          Text(product.name, style: AppTextStyle.smallBlack),
-          Text(
-            '\$${product.price.toStringAsFixed(2).replaceAll('.', ',')}',
-            style: AppTextStyle.smallGreen,
-          ),
-        ],
-      ),
+        ),
+        SizedBox(height: 8),
+        Text(product.brand, style: AppTextStyle.smallGrey),
+        Text(product.name, style: AppTextStyle.smallBlack),
+        Text(
+          '\$${product.price.toStringAsFixed(2).replaceAll('.', ',')}',
+          style: AppTextStyle.smallGreen,
+        ),
+      ],
     );
   }
 }

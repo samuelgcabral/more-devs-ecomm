@@ -48,7 +48,10 @@ class _HomePageState extends State<HomePage> {
                 categories: homeController.categories,
               ),
               ProductsSection(
-                state: homeController.productsState,
+                isLoading:
+                    homeController.productsState == ProductsViewState.loading,
+                hasError:
+                    homeController.productsState == ProductsViewState.error,
                 products: homeController.products,
               ),
               AppElevatedButton(
