@@ -28,18 +28,23 @@ class CategoriesSection extends StatelessWidget {
     final isLoading = state == CategoriesViewState.loading;
     final items = isLoading ? _fakeCategories : categories;
 
-    return Skeletonizer(
-      enabled: isLoading,
-      child: SizedBox(
-        height: 150,
-        child: ListView.builder(
-          itemCount: items.length,
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (context, index) {
-            return CategoryCard(category: items[index]);
-          },
+    return switch (state) {
+      CategoriesViewState.error => const Text(
+        'Problema ao resgatar categorias',
+      ),
+      _ => Skeletonizer(
+        enabled: isLoading,
+        child: SizedBox(
+          height: 150,
+          child: ListView.builder(
+            itemCount: items.length,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) {
+              return CategoryCard(category: items[index]);
+            },
+          ),
         ),
       ),
-    );
+    };
   }
 }

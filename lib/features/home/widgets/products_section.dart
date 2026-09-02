@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:more_devs_do_zero/features/home/controllers/home_controller.dart';
 import 'package:more_devs_do_zero/features/home/models/product_model.dart';
 import 'package:more_devs_do_zero/features/home/widgets/product_card.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
@@ -8,11 +7,13 @@ import 'package:skeletonizer/skeletonizer.dart';
 class ProductsSection extends StatelessWidget {
   const ProductsSection({
     super.key,
-    required this.state,
+    required this.isLoading,
+    required this.hasError,
     required this.products,
   });
 
-  final ProductsViewState state;
+  final bool isLoading;
+  final bool hasError;
   final List<Product> products;
 
   static final List<Product> _fakeProducts = List.filled(
@@ -22,12 +23,14 @@ class ProductsSection extends StatelessWidget {
       name: 'Nome do produto',
       imageUrl: '',
       price: 0,
+      category: '',
     ),
   );
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -39,12 +42,11 @@ class ProductsSection extends StatelessWidget {
             ],
           ),
         ),
-        if (state == ProductsViewState.error)
+        if (hasError)
           const Text('Problema ao resgatar produtos')
         else
           Builder(
             builder: (context) {
-              final isLoading = state == ProductsViewState.loading;
               final items = isLoading ? _fakeProducts : products;
 
               return Skeletonizer(
@@ -57,7 +59,13 @@ class ProductsSection extends StatelessWidget {
                   child: IntrinsicHeight(
                     child: Row(
                       children: items.map((Product product) {
-                        return ProductCard(product: product);
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: SizedBox(
+                            width: 150,
+                            child: ProductCard(product: product),
+                          ),
+                        );
                       }).toList(),
                     ),
                   ),
