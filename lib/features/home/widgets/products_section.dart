@@ -19,11 +19,11 @@ class ProductsSection extends StatelessWidget {
   static final List<Product> _fakeProducts = List.filled(
     4,
     Product(
+      category: 'Categoria do produto',
       brand: 'Marca do produto',
       name: 'Nome do produto',
       imageUrl: '',
       price: 0,
-      category: '',
     ),
   );
 

@@ -6,11 +6,11 @@ class Product {
   final String category;
 
   Product({
+    required this.category,
     required this.brand,
     required this.name,
     required this.imageUrl,
     required this.price,
-    required this.category,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {

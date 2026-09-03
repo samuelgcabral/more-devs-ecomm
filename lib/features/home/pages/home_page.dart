@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/home/controllers/home_controller.dart';
+import 'package:more_devs_do_zero/features/home/widgets/banner_section.dart';
 import 'package:more_devs_do_zero/features/home/widgets/categories_section.dart';
 import 'package:more_devs_do_zero/features/home/widgets/products_section.dart';
 import 'package:more_devs_do_zero/features/login/controllers/login_controller.dart';
@@ -54,8 +55,9 @@ appBar: AppBar(
 ),
       body: Consumer<HomeController>(
         builder: (context, homeController, child) {
-          return Column(
+          return ListView(
             children: [
+              const BannerSection(),
               CategoriesSection(
                 state: homeController.categoriesState,
                 categories: homeController.categories,

@@ -8,6 +8,11 @@ class AppTextStyle {
     fontSize: 24,
     fontWeight: FontWeight.bold,
   );
+  static TextStyle subTitle = TextStyle(
+    color: AppColors.black,
+    fontSize: 20,
+    fontWeight: FontWeight.bold,
+  );
 
   static TextStyle buttonLabel = TextStyle(
     color: AppColors.white,
