@@ -8,6 +8,7 @@ import 'package:more_devs_do_zero/shared/app_text_style.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_elevated_button.dart';
 import 'package:provider/provider.dart';
 import 'package:more_devs_do_zero/features/login/pages/login_page.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
   static String route = '/home';
@@ -30,29 +31,29 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-appBar: AppBar(
-  title: Consumer<LoginController>(
-    builder: (context, loginController, child) {
-      return Text(
-        'Olá ${loginController.user!.nome}',
-        style: AppTextStyle.title,
-      );
-    },
-  ),
-  actions: [
-    IconButton(
-      tooltip: 'Sair',
-      icon: const Icon(Icons.logout),
-      onPressed: () {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          LoginPage.route,
-          (route) => false,
-        );
-      },
-    ),
-  ],
-),
+      appBar: AppBar(
+        title: Consumer<LoginController>(
+          builder: (context, loginController, child) {
+            return Text(
+              'Olá ${loginController.user!.nome}',
+              style: AppTextStyle.title,
+            );
+          },
+        ),
+        actions: [
+          IconButton(
+            tooltip: 'Sair',
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                LoginPage.route,
+                (route) => false,
+              );
+            },
+          ),
+        ],
+      ),
       body: Consumer<HomeController>(
         builder: (context, homeController, child) {
           return ListView(
@@ -68,6 +69,17 @@ appBar: AppBar(
                 hasError:
                     homeController.productsState == ProductsViewState.error,
                 products: homeController.products,
+                onProductTap: (product) {
+                  showModalBottomSheet<void>(
+                    context: context,
+                    builder: (modalContext) {
+                      return SizedBox(
+                        height: 300,
+                        child: Center(child: Text(product.name)),
+                      );
+                    },
+                  );
+                },
               ),
               AppElevatedButton(
                 label: 'Testar',

@@ -79,9 +79,7 @@ class _ProductsByCategoryPageState extends State<ProductsByCategoryPage> {
                     : controller.products;
 
                 if (!isLoading && products.isEmpty) {
-                  return const Center(
-                    child: Text('Nenhum produto encontrado'),
-                  );
+                  return const Center(child: Text('Nenhum produto encontrado'));
                 }
 
                 return Skeletonizer(
@@ -97,7 +95,10 @@ class _ProductsByCategoryPageState extends State<ProductsByCategoryPage> {
                           childAspectRatio: 0.62,
                         ),
                     itemBuilder: (context, index) {
-                      return ProductCard(product: products[index]);
+                      return ProductCard(
+                        product: products[index],
+                        onTap: () {},
+                      );
                     },
                   ),
                 );

@@ -10,11 +10,13 @@ class ProductsSection extends StatelessWidget {
     required this.isLoading,
     required this.hasError,
     required this.products,
+    required this.onProductTap,
   });
 
   final bool isLoading;
   final bool hasError;
   final List<Product> products;
+  final ValueChanged<Product> onProductTap;
 
   static final List<Product> _fakeProducts = List.filled(
     4,
@@ -63,7 +65,10 @@ class ProductsSection extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: SizedBox(
                             width: 150,
-                            child: ProductCard(product: product),
+                            child: ProductCard(
+                              product: product,
+                              onTap: () => onProductTap(product),
+                            ),
                           ),
                         );
                       }).toList(),
