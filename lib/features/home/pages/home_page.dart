@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/home/controllers/home_controller.dart';
 import 'package:more_devs_do_zero/features/home/widgets/banner_section.dart';
 import 'package:more_devs_do_zero/features/home/widgets/categories_section.dart';
+import 'package:more_devs_do_zero/features/home/widgets/product_details_modal.dart';
 import 'package:more_devs_do_zero/features/home/widgets/products_section.dart';
 import 'package:more_devs_do_zero/features/login/controllers/login_controller.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
-import 'package:more_devs_do_zero/shared/widgets/app_elevated_button.dart';
 import 'package:provider/provider.dart';
 import 'package:more_devs_do_zero/features/login/pages/login_page.dart';
 
@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> {
           builder: (context, loginController, child) {
             return Text(
               'Olá ${loginController.user!.nome}',
-              style: AppTextStyle.title,
+              style: AppTextStyle.subTitle,
             );
           },
         ),
@@ -70,24 +70,7 @@ class _HomePageState extends State<HomePage> {
                     homeController.productsState == ProductsViewState.error,
                 products: homeController.products,
                 onProductTap: (product) {
-                  showModalBottomSheet<void>(
-                    context: context,
-                    builder: (modalContext) {
-                      return SizedBox(
-                        height: 300,
-                        child: Center(child: Text(product.name)),
-                      );
-                    },
-                  );
-                },
-              ),
-              AppElevatedButton(
-                label: 'Testar',
-                type: ButtonType.filled,
-                onPressed: () {
-                  homeController
-                    ..getCategories()
-                    ..getProducts();
+                  ProductDetailsModal.show(context, product);
                 },
               ),
             ],

@@ -16,6 +16,28 @@ class LoginPage extends StatelessWidget {
 
   static const String route = '/login';
 
+  Future<void> _submitLogin(
+    BuildContext context,
+    LoginController controller,
+  ) async {
+    if (controller.isLoading || !controller.key.currentState!.validate()) {
+      return;
+    }
+
+    try {
+      await controller.handleLogin();
+      if (!context.mounted) return;
+      Navigator.popAndPushNamed(context, HomePage.route);
+    } on AuthException catch (e) {
+      if (!context.mounted) return;
+      AnimatedSnackBar.material(
+        e.message,
+        type: AnimatedSnackBarType.error,
+        mobileSnackBarPosition: MobileSnackBarPosition.bottom,
+      ).show(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,6 +85,9 @@ class LoginPage extends StatelessWidget {
                               },
                               hintText: '****************',
                               obscureText: true,
+                              textInputAction: TextInputAction.done,
+                              onFieldSubmitted: (_) =>
+                                  _submitLogin(context, controller),
                             ),
 
                             Row(
@@ -93,24 +118,8 @@ class LoginPage extends StatelessWidget {
                             AppElevatedButton(
                               label: 'Entrar',
                               isLoading: controller.isLoading,
-                              onPressed: () async {
-                                try {
-                                  await controller.handleLogin();
-                                  if (!context.mounted) return;
-                                  Navigator.popAndPushNamed(
-                                    context,
-                                    HomePage.route,
-                                  );
-                                } on AuthException catch (e) {
-                                  if (!context.mounted) return;
-                                  AnimatedSnackBar.material(
-                                    e.message,
-                                    type: AnimatedSnackBarType.error,
-                                    mobileSnackBarPosition:
-                                        MobileSnackBarPosition.bottom,
-                                  ).show(context);
-                                }
-                              },
+                              onPressed: () =>
+                                  _submitLogin(context, controller),
                               type: ButtonType.filled,
                             ),
                             SizedBox(height: 12),

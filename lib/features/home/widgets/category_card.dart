@@ -19,20 +19,41 @@ class CategoryCard extends StatelessWidget {
           arguments: category.name,
         );
       },
-      child: Container(
-        margin: EdgeInsets.all(10),
+      child: SizedBox(
+        width: 76,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(
-              height: 76,
+              width: 64,
+              height: 64,
               child: Skeleton.replace(
-                replacement: Bone.circle(size: 50),
-                width: 76,
-                height: 76,
-                child: Image.network(category.imageUrl),
+                replacement: Bone.circle(size: 64),
+                width: 64,
+                height: 64,
+                child: ClipOval(
+                  child: Image.network(
+                    category.imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        const ColoredBox(
+                          color: Color(0xFFF2F2F2),
+                          child: Center(
+                            child: Icon(Icons.image_not_supported_outlined),
+                          ),
+                        ),
+                  ),
+                ),
               ),
             ),
-            Text(category.name, style: AppTextStyle.smallBlack),
+            const SizedBox(height: 8),
+            Text(
+              category.name,
+              style: AppTextStyle.smallBlack,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ],
         ),
       ),

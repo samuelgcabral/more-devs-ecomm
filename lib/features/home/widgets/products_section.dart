@@ -39,11 +39,12 @@ class ProductsSection extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Produtos', style: AppTextStyle.title),
+              Text('Produtos', style: AppTextStyle.subTitle),
               Icon(Icons.chevron_right),
             ],
           ),
         ),
+        const SizedBox(height: 8),
         if (hasError)
           const Text('Problema ao resgatar produtos')
         else

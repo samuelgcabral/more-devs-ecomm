@@ -55,7 +55,7 @@ class _BannerSectionState extends State<BannerSection> {
         children: [
           SizedBox(
             width: double.infinity,
-            height: 142,
+            height: 160,
             child: PageView.builder(
               controller: _pageController,
               itemCount: _items.length,

@@ -7,6 +7,8 @@ class AppTextField extends StatefulWidget {
     required this.hintText,
     this.obscureText = false,
     this.onChanged,
+    this.onFieldSubmitted,
+    this.textInputAction,
     this.validator,
     this.controller,
     this.prefixIcon,
@@ -15,6 +17,8 @@ class AppTextField extends StatefulWidget {
   final String hintText;
   final bool obscureText;
   final Function(String)? onChanged;
+  final ValueChanged<String>? onFieldSubmitted;
+  final TextInputAction? textInputAction;
   final String? Function(String?)? validator;
   final TextEditingController? controller;
   final Widget? prefixIcon;
@@ -44,6 +48,8 @@ class _AppTextFieldState extends State<AppTextField> {
       //autovalidateMode - controle a maneira que o campo é validado, nesse caso, quando o campo perde o foco
       autovalidateMode: AutovalidateMode.onUnfocus,
       onChanged: widget.onChanged,
+      onFieldSubmitted: widget.onFieldSubmitted,
+      textInputAction: widget.textInputAction,
       obscureText: isObscure,
       validator: widget.validator,
       decoration: InputDecoration(

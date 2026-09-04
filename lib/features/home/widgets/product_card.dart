@@ -22,7 +22,17 @@ class ProductCard extends StatelessWidget {
             child: Skeleton.replace(
               child: AspectRatio(
                 aspectRatio: 1,
-                child: Image.network(product.imageUrl, fit: BoxFit.cover),
+                child: Image.network(
+                  product.imageUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const ColoredBox(
+                        color: Color(0xFFF2F2F2),
+                        child: Center(
+                          child: Icon(Icons.image_not_supported_outlined),
+                        ),
+                      ),
+                ),
               ),
             ),
           ),
