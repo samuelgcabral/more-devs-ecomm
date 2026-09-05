@@ -39,7 +39,7 @@ class CategoriesSection extends StatelessWidget {
             children: [
               Text(
                 'Categorias',
-                style: AppTextStyle.subTitle.copyWith(fontSize: 16),
+                style: AppTextStyle.subTitle.copyWith(fontSize: 18),
               ),
               const SizedBox(width: 8),
               const DecoratedBox(

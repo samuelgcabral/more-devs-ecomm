@@ -26,6 +26,7 @@ class ProductsSection extends StatelessWidget {
       name: 'Nome do produto',
       imageUrl: '',
       price: 0,
+      description: 'Descrição do produto',
     ),
   );
 
@@ -39,7 +40,10 @@ class ProductsSection extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Produtos', style: AppTextStyle.subTitle),
+              Text(
+                'Produtos',
+                style: AppTextStyle.subTitle.copyWith(fontSize: 20),
+              ),
               Icon(Icons.chevron_right),
             ],
           ),

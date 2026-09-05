@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/home/controllers/products_by_category_controller.dart';
 import 'package:more_devs_do_zero/features/home/models/product_model.dart';
 import 'package:more_devs_do_zero/features/home/widgets/product_card.dart';
+import 'package:more_devs_do_zero/features/home/widgets/product_details_modal.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_text_field.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +28,7 @@ class _ProductsByCategoryPageState extends State<ProductsByCategoryPage> {
       imageUrl: '',
       price: 0,
       category: '',
+      description: '',
     ),
   );
 
@@ -95,9 +97,13 @@ class _ProductsByCategoryPageState extends State<ProductsByCategoryPage> {
                           childAspectRatio: 0.62,
                         ),
                     itemBuilder: (context, index) {
+                      final product = products[index];
+
                       return ProductCard(
-                        product: products[index],
-                        onTap: () {},
+                        product: product,
+                        onTap: () {
+                          ProductDetailsModal.show(context, product);
+                        },
                       );
                     },
                   ),

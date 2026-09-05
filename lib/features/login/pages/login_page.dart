@@ -83,7 +83,7 @@ class LoginPage extends StatelessWidget {
                               validator: (value) {
                                 return controller.validateSenha(value);
                               },
-                              hintText: '****************',
+                              hintText: 'Senha',
                               obscureText: true,
                               textInputAction: TextInputAction.done,
                               onFieldSubmitted: (_) =>
