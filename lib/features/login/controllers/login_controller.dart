@@ -49,6 +49,18 @@ class LoginController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void logout() {
+    user = null;
+    senhaController.clear();
+    isLoading = false;
+
+    if (!isActiveCheckBox) {
+      emailController.clear();
+    }
+
+    notifyListeners();
+  }
+
   Future<void> handleLogin() async {
     if (!key.currentState!.validate()) {
       throw ErrorDescription('validacao_incorreta');
