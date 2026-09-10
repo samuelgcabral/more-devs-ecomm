@@ -1,10 +1,11 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/home/models/product_model.dart';
 import 'package:more_devs_do_zero/features/home/widgets/product_card.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class ProductsSection extends StatelessWidget {
+class ProductsSection extends StatefulWidget {
   const ProductsSection({
     super.key,
     required this.isLoading,
@@ -18,6 +19,13 @@ class ProductsSection extends StatelessWidget {
   final List<Product> products;
   final ValueChanged<Product> onProductTap;
 
+  @override
+  State<ProductsSection> createState() => _ProductsSectionState();
+}
+
+class _ProductsSectionState extends State<ProductsSection> {
+  final ScrollController _scrollController = ScrollController();
+
   static final List<Product> _fakeProducts = List.filled(
     4,
     Product(
@@ -29,6 +37,39 @@ class ProductsSection extends StatelessWidget {
       description: 'Descrição do produto',
     ),
   );
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _handlePointerSignal(PointerSignalEvent event) {
+    if (event is! PointerScrollEvent || widget.isLoading) return;
+    if (!_scrollController.hasClients) return;
+    if (_scrollController.position.maxScrollExtent <= 0) return;
+
+    // Claim the event so the enclosing vertical ListView doesn't also scroll.
+    GestureBinding.instance.pointerSignalResolver.register(event, (
+      PointerSignalEvent event,
+    ) {
+      final scrollEvent = event as PointerScrollEvent;
+      // Translate vertical mouse wheel movement into horizontal scrolling.
+      final double delta = scrollEvent.scrollDelta.dy != 0
+          ? scrollEvent.scrollDelta.dy
+          : scrollEvent.scrollDelta.dx;
+      final double target = (_scrollController.offset + delta).clamp(
+        _scrollController.position.minScrollExtent,
+        _scrollController.position.maxScrollExtent,
+      );
+
+      if (target != _scrollController.offset) {
+        _scrollController.jumpTo(target);
+      }
+      // Stop the browser / OS from also scrolling the page (web & desktop).
+      scrollEvent.respond(allowPlatformDefault: false);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,34 +90,38 @@ class ProductsSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        if (hasError)
+        if (widget.hasError)
           const Text('Problema ao resgatar produtos')
         else
           Builder(
             builder: (context) {
-              final items = isLoading ? _fakeProducts : products;
+              final items = widget.isLoading ? _fakeProducts : widget.products;
 
               return Skeletonizer(
-                enabled: isLoading,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  physics: isLoading
-                      ? const NeverScrollableScrollPhysics()
-                      : null,
-                  child: IntrinsicHeight(
-                    child: Row(
-                      children: items.map((Product product) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: SizedBox(
-                            width: 150,
-                            child: ProductCard(
-                              product: product,
-                              onTap: () => onProductTap(product),
+                enabled: widget.isLoading,
+                child: Listener(
+                  onPointerSignal: _handlePointerSignal,
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    scrollDirection: Axis.horizontal,
+                    physics: widget.isLoading
+                        ? const NeverScrollableScrollPhysics()
+                        : null,
+                    child: IntrinsicHeight(
+                      child: Row(
+                        children: items.map((Product product) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: SizedBox(
+                              width: 150,
+                              child: ProductCard(
+                                product: product,
+                                onTap: () => widget.onProductTap(product),
+                              ),
                             ),
-                          ),
-                        );
-                      }).toList(),
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ),
                 ),

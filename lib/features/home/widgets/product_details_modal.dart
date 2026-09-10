@@ -1,20 +1,37 @@
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:more_devs_do_zero/features/cart/controllers/cart_controller.dart';
 import 'package:more_devs_do_zero/features/home/models/product_model.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
+import 'package:provider/provider.dart';
 
 class ProductDetailsModal extends StatelessWidget {
-  const ProductDetailsModal({super.key, required this.product});
+  const ProductDetailsModal({
+    super.key,
+    required this.product,
+    required this.scrollController,
+  });
 
   final Product product;
+  final ScrollController scrollController;
 
   static Future<void> show(BuildContext context, Product product) {
     return showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => FractionallySizedBox(
-        heightFactor: 0.73,
-        child: ProductDetailsModal(product: product),
+      builder: (context) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.73,
+        minChildSize: 0.4,
+        maxChildSize: 0.95,
+        snap: true,
+        snapSizes: const [0.73],
+        shouldCloseOnMinExtent: true,
+        builder: (context, scrollController) => ProductDetailsModal(
+          product: product,
+          scrollController: scrollController,
+        ),
       ),
     );
   }
@@ -28,22 +45,26 @@ class ProductDetailsModal extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const SizedBox(height: 12),
-          Container(
-            width: 74,
-            height: 5,
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(100),
-            ),
-          ),
-          const SizedBox(height: 18),
           Expanded(
             child: SingleChildScrollView(
+              controller: scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 12),
+                  Center(
+                    child: Container(
+                      width: 74,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(14),
                     child: AspectRatio(
@@ -89,7 +110,15 @@ class ProductDetailsModal extends StatelessWidget {
                 width: double.infinity,
                 height: 48,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    context.read<CartController>().addToCart(product);
+                    AnimatedSnackBar.material(
+                      '${product.name} adicionado ao carrinho',
+                      type: AnimatedSnackBarType.success,
+                      mobileSnackBarPosition: MobileSnackBarPosition.bottom,
+                    ).show(context);
+                    Navigator.pop(context);
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
                     foregroundColor: Colors.white,

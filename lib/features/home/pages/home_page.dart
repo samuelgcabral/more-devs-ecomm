@@ -50,12 +50,11 @@ class _HomePageState extends State<HomePage> {
     );
 
     if (shouldLogout == true && mounted) {
-      context.read<LoginController>().logout();
       Navigator.pushNamedAndRemoveUntil(
         context,
         LoginPage.route,
         (route) => false,
-      );
+      ).then((value) => context.read<LoginController>().logout());
     }
   }
 
