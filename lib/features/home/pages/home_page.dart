@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:more_devs_do_zero/features/cart/widgets/cart_icon_button.dart';
 import 'package:more_devs_do_zero/features/home/controllers/home_controller.dart';
 import 'package:more_devs_do_zero/features/home/widgets/banner_section.dart';
 import 'package:more_devs_do_zero/features/home/widgets/categories_section.dart';
@@ -54,7 +55,11 @@ class _HomePageState extends State<HomePage> {
         context,
         LoginPage.route,
         (route) => false,
-      ).then((value) => context.read<LoginController>().logout());
+      ).then((value) {
+        if (mounted) {
+          context.read<LoginController>().logout();
+        }
+      });
     }
   }
 
@@ -71,6 +76,7 @@ class _HomePageState extends State<HomePage> {
           },
         ),
         actions: [
+          const CartIconButton(),
           IconButton(
             tooltip: 'Sair',
             icon: const Icon(Icons.logout),

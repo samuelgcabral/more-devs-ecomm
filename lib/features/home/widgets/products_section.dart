@@ -35,6 +35,7 @@ class _ProductsSectionState extends State<ProductsSection> {
       imageUrl: '',
       price: 0,
       description: 'Descrição do produto',
+      id: '',
     ),
   );
 

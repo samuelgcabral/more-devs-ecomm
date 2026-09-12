@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:more_devs_do_zero/features/cart/widgets/cart_icon_button.dart';
 import 'package:more_devs_do_zero/features/home/controllers/products_by_category_controller.dart';
 import 'package:more_devs_do_zero/features/home/models/product_model.dart';
 import 'package:more_devs_do_zero/features/home/widgets/product_card.dart';
@@ -29,6 +30,7 @@ class _ProductsByCategoryPageState extends State<ProductsByCategoryPage> {
       price: 0,
       category: '',
       description: '',
+      id: '',
     ),
   );
 
@@ -48,12 +50,7 @@ class _ProductsByCategoryPageState extends State<ProductsByCategoryPage> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(widget.categoryName, style: AppTextStyle.title),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.shopping_cart_outlined),
-          ),
-        ],
+        actions: [const CartIconButton()],
       ),
       body: Column(
         children: [

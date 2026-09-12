@@ -17,6 +17,7 @@ void main() {
         imageUrl: '',
         price: 10,
         description: 'desc',
+        id: '',
       ),
     );
 
@@ -42,18 +43,14 @@ void main() {
       of: find.byType(ProductsSection),
       matching: find.byType(Scrollable),
     );
-    final controller = tester
-        .state<ScrollableState>(scrollable)
-        .position;
+    final controller = tester.state<ScrollableState>(scrollable).position;
     expect(controller.pixels, 0);
     expect(controller.maxScrollExtent, greaterThan(0));
 
     final center = tester.getCenter(find.text('Product 0'));
     final testPointer = TestPointer(1, PointerDeviceKind.mouse);
     testPointer.hover(center);
-    await tester.sendEventToBinding(
-      testPointer.scroll(const Offset(0, 300)),
-    );
+    await tester.sendEventToBinding(testPointer.scroll(const Offset(0, 300)));
     await tester.pumpAndSettle();
 
     expect(controller.pixels, greaterThan(0));

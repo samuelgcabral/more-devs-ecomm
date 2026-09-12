@@ -20,15 +20,41 @@ class CartPage extends StatelessWidget {
             itemCount: items.length,
             itemBuilder: (context, index) {
               final item = items[index];
-              return ListTile(
-                title: Text(item.product.name),
-                subtitle: Text('Quantidade: ${item.quantity}'),
-                trailing: IconButton(
-                  icon: const Icon(Icons.remove_shopping_cart),
-                  onPressed: () {
-                    cartController.removeFromCart(item.product);
-                  },
-                ),
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(item.name),
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.remove),
+                        onPressed: () {
+                          cartController.updateQuantity(
+                            item,
+                            item.quantity - 1,
+                          );
+                        },
+                      ),
+                      Text('${item.quantity}'),
+                      IconButton(
+                        icon: const Icon(Icons.add),
+                        onPressed: () {
+                          cartController.updateQuantity(
+                            item,
+                            item.quantity + 1,
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  Text('Subtotal: \$${item.subtotal.toStringAsFixed(2)}'),
+                  IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () {
+                      cartController.removeFromCart(item);
+                    },
+                  ),
+                ],
               );
             },
           );

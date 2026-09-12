@@ -23,6 +23,7 @@ final List<Map<String, dynamic>> categoriesJson = [
 
 final List<Map<String, dynamic>> productsJson = [
   {
+    'id': '46640ee7-0361-4aad-8fe3-00fd9deab31d',
     'brand': 'Natural da terra',
     'name': 'Rabanete',
     'imageUrl':
@@ -33,6 +34,7 @@ final List<Map<String, dynamic>> productsJson = [
         'O rabanete é uma raiz crocante e levemente picante, ideal para saladas, conservas e acompanhamentos frescos.',
   },
   {
+    'id': 'dcd9a074-0360-43a8-bee8-cd2ecc80eea1',
     'brand': 'Natural da terra',
     'name': 'Cogumelo',
     'imageUrl':
@@ -43,6 +45,7 @@ final List<Map<String, dynamic>> productsJson = [
         'O cogumelo possui sabor delicado e textura macia, combinando com molhos, risotos, massas e diversos refogados.',
   },
   {
+    'id': '191dae2f-d849-4482-b12c-d48fbbc7ae0a',
     'brand': 'Natural da terra',
     'name': 'Alface',
     'imageUrl':
@@ -53,6 +56,7 @@ final List<Map<String, dynamic>> productsJson = [
         'A alface é uma verdura leve, fresca e versátil, perfeita para preparar saladas, sanduíches e refeições equilibradas.',
   },
   {
+    'id': '249fea87-58d0-418f-b427-f730780605b5',
     'brand': 'Akatsu',
     'name': 'Acerola',
     'imageUrl':
@@ -63,6 +67,7 @@ final List<Map<String, dynamic>> productsJson = [
         'A acerola é uma fruta tropical conhecida pelo seu sabor refrescante, levemente ácido e naturalmente adocicado. Rica em vitamina C e muito versátil, pode ser consumida in natura, utilizada em sucos, vitaminas, sobremesas e diversas receitas.\nIdeal para quem busca uma opção saborosa e nutritiva para o dia a dia. Produto selecionado para garantir qualidade, frescor e sabor.',
   },
   {
+    'id': 'd920c0ae-3fca-4261-8b2d-35724b16ca56',
     'brand': 'Akatsu',
     'name': 'Banana',
     'imageUrl':
@@ -73,6 +78,7 @@ final List<Map<String, dynamic>> productsJson = [
         'A banana é uma fruta naturalmente doce e rica em energia, ótima para lanches, vitaminas, sobremesas e receitas.',
   },
   {
+    'id': 'b9350138-a6c0-422c-88ad-7257a2d53755',
     'brand': 'Akatsu',
     'name': 'Morango',
     'imageUrl':
@@ -83,6 +89,7 @@ final List<Map<String, dynamic>> productsJson = [
         'O morango tem sabor doce e levemente ácido, sendo uma excelente opção para sobremesas, vitaminas ou consumo fresco.',
   },
   {
+    'id': '95da5e5d-ea70-4cee-9b41-0c2df5329c43',
     'brand': 'Pão & Cia',
     'name': 'Pão francês',
     'imageUrl':
@@ -93,6 +100,7 @@ final List<Map<String, dynamic>> productsJson = [
         'O pão francês possui casca crocante e miolo macio, ideal para acompanhar o café da manhã ou preparar sanduíches.',
   },
   {
+    'id': '169b5515-38a3-4416-a2b2-736b48b64d9e',
     'brand': 'Pão & Cia',
     'name': 'Baguete',
     'imageUrl':
@@ -103,6 +111,7 @@ final List<Map<String, dynamic>> productsJson = [
         'A baguete é um pão de formato alongado, com casca dourada e interior macio, perfeito para entradas e sanduíches.',
   },
   {
+    'id': 'd82b367c-ab36-4eda-bb01-dd112d8cb6e2',
     'brand': 'La Frontera',
     'name': 'Queijo Manchego',
     'imageUrl':
@@ -113,6 +122,7 @@ final List<Map<String, dynamic>> productsJson = [
         'O queijo Manchego é um queijo espanhol de sabor marcante e textura firme, excelente para tábuas de frios e aperitivos.',
   },
   {
+    'id': '4cde902e-4d50-4876-ab8f-f6acfdd7e8f2',
     'brand': 'La Frontera',
     'name': 'Chocolate Belga',
     // Frank Wouters, CC BY 2.0: https://creativecommons.org/licenses/by/2.0/
