@@ -28,4 +28,6 @@ class ProductCart extends Product {
   }
 
   double get subtotal => price * quantity;
+
+  get product => null;
 }

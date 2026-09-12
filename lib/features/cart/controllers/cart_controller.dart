@@ -21,6 +21,13 @@ class CartController extends ChangeNotifier {
     notifyListeners();
   }
 
+  ProductCart? findByProduct(Product product) {
+    for (final item in _items) {
+      if (item == product) return item;
+    }
+    return null;
+  }
+
   void removeFromCart(Product product) {
     _items.removeWhere((item) => item == product);
     notifyListeners();
@@ -44,6 +51,5 @@ class CartController extends ChangeNotifier {
   double get totalPrice =>
       _items.fold(0.0, (total, item) => total + item.subtotal);
 
-  int get itemCount =>
-      _items.fold(0, (total, item) => total + item.quantity);
+  int get itemCount => _items.fold(0, (total, item) => total + item.quantity);
 }

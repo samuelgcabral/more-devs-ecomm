@@ -102,40 +102,105 @@ class ProductDetailsModal extends StatelessWidget {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18, 10, 18, 10),
-            child: SafeArea(
-              top: false,
-              child: SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: () {
-                    context.read<CartController>().addToCart(product);
-                    AnimatedSnackBar.material(
-                      '${product.name} adicionado ao carrinho',
-                      type: AnimatedSnackBarType.success,
-                      mobileSnackBarPosition: MobileSnackBarPosition.bottom,
-                    ).show(context);
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                  ),
-                  child: Text(
-                    'Adicionar no carrinho',
-                    style: AppTextStyle.buttonLabel.copyWith(fontSize: 16),
+          Consumer<CartController>(
+            builder: (context, cartController, child) {
+              final existingItem = cartController.findByProduct(product);
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(18, 10, 18, 10),
+                child: SafeArea(
+                  top: false,
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: existingItem == null
+                        ? ElevatedButton(
+                            onPressed: () {
+                              cartController.addToCart(product);
+                              AnimatedSnackBar.material(
+                                '${product.name} adicionado ao carrinho',
+                                type: AnimatedSnackBarType.success,
+                                mobileSnackBarPosition:
+                                    MobileSnackBarPosition.bottom,
+                              ).show(context);
+                              Navigator.pop(context);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.black,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                            ),
+                            child: Text(
+                              'Adicionar no carrinho',
+                              style: AppTextStyle.buttonLabel.copyWith(
+                                fontSize: 16,
+                              ),
+                            ),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _QuantityButton(
+                                icon: Icons.remove,
+                                onPressed: () => cartController.updateQuantity(
+                                  existingItem,
+                                  existingItem.quantity - 1,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 56,
+                                child: Text(
+                                  '${existingItem.quantity}',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              _QuantityButton(
+                                icon: Icons.add,
+                                onPressed: () => cartController.updateQuantity(
+                                  existingItem,
+                                  existingItem.quantity + 1,
+                                ),
+                              ),
+                            ],
+                          ),
                   ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _QuantityButton extends StatelessWidget {
+  const _QuantityButton({required this.icon, required this.onPressed});
+
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 48,
+      height: 48,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.black,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          padding: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+        ),
+        child: Icon(icon, size: 20),
       ),
     );
   }
