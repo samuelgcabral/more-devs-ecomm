@@ -1,6 +1,7 @@
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/cart/controllers/cart_controller.dart';
+import 'package:more_devs_do_zero/features/cart/widgets/quantity_button.dart';
 import 'package:more_devs_do_zero/features/home/models/product_model.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
 import 'package:provider/provider.dart';
@@ -142,7 +143,7 @@ class ProductDetailsModal extends StatelessWidget {
                         : Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              _QuantityButton(
+                              QuantityButton(
                                 icon: Icons.remove,
                                 onPressed: () => cartController.updateQuantity(
                                   existingItem,
@@ -160,7 +161,7 @@ class ProductDetailsModal extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              _QuantityButton(
+                              QuantityButton(
                                 icon: Icons.add,
                                 onPressed: () => cartController.updateQuantity(
                                   existingItem,
@@ -175,32 +176,6 @@ class ProductDetailsModal extends StatelessWidget {
             },
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _QuantityButton extends StatelessWidget {
-  const _QuantityButton({required this.icon, required this.onPressed});
-
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 48,
-      height: 48,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          padding: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-        ),
-        child: Icon(icon, size: 20),
       ),
     );
   }
