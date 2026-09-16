@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/home/models/product_model.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
+import 'package:more_devs_do_zero/shared/currency_format.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class ProductCard extends StatelessWidget {
@@ -39,10 +40,7 @@ class ProductCard extends StatelessWidget {
           SizedBox(height: 8),
           Text(product.brand, style: AppTextStyle.smallGrey),
           Text(product.name, style: AppTextStyle.smallBlack),
-          Text(
-            '\$${product.price.toStringAsFixed(2).replaceAll('.', ',')}',
-            style: AppTextStyle.smallGreen,
-          ),
+          Text(product.price.toBRL(), style: AppTextStyle.smallGreen),
         ],
       ),
     );

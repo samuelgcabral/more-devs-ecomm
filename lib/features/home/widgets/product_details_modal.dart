@@ -4,6 +4,7 @@ import 'package:more_devs_do_zero/features/cart/controllers/cart_controller.dart
 import 'package:more_devs_do_zero/features/cart/widgets/quantity_button.dart';
 import 'package:more_devs_do_zero/features/home/models/product_model.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
+import 'package:more_devs_do_zero/shared/currency_format.dart';
 import 'package:provider/provider.dart';
 
 class ProductDetailsModal extends StatelessWidget {
@@ -92,7 +93,7 @@ class ProductDetailsModal extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'R\$ ${product.price.toStringAsFixed(2).replaceAll('.', ',')}',
+                    product.price.toBRL(),
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
