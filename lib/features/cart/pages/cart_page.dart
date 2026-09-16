@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/cart/controllers/cart_controller.dart';
 import 'package:more_devs_do_zero/features/cart/widgets/cart_item_card.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
-import 'package:more_devs_do_zero/shared/currency_format.dart';
+import 'package:more_devs_do_zero/shared/widgets/animated_price_text.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_elevated_button.dart';
 import 'package:provider/provider.dart';
 
@@ -64,8 +64,8 @@ class CartPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Text(
-                      cartController.totalPrice.toBRL(),
+                    child: AnimatedPriceText(
+                      value: cartController.totalPrice,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppTextStyle.title,

@@ -4,7 +4,7 @@ import 'package:more_devs_do_zero/features/cart/models/cart_item.dart';
 import 'package:more_devs_do_zero/features/cart/widgets/confirm_remove_dialog.dart';
 import 'package:more_devs_do_zero/features/cart/widgets/quantity_button.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
-import 'package:more_devs_do_zero/shared/currency_format.dart';
+import 'package:more_devs_do_zero/shared/widgets/animated_price_text.dart';
 
 class CartItemCard extends StatelessWidget {
   const CartItemCard({
@@ -78,7 +78,10 @@ class CartItemCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Text(item.subtotal.toBRL(), style: AppTextStyle.title),
+                    AnimatedPriceText(
+                      value: item.subtotal,
+                      style: AppTextStyle.title,
+                    ),
                   ],
                 ),
                 const SizedBox(height: 20),
