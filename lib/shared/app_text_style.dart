@@ -28,6 +28,10 @@ class AppTextStyle {
     fontWeight: FontWeight.w500,
     color: AppColors.grey,
   );
+  static TextStyle smallRed = TextStyle(
+    fontWeight: FontWeight.w700,
+    color: AppColors.red,
+  );
 
   static TextStyle smallGreen = TextStyle(
     fontWeight: FontWeight.w500,

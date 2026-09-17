@@ -80,7 +80,7 @@ class CartItemCard extends StatelessWidget {
                     const SizedBox(width: 8),
                     AnimatedPriceText(
                       value: item.subtotal,
-                      style: AppTextStyle.title,
+                      style: AppTextStyle.title.copyWith(fontSize: 22),
                     ),
                   ],
                 ),

@@ -40,7 +40,8 @@ class ProductCard extends StatelessWidget {
           SizedBox(height: 8),
           Text(product.brand, style: AppTextStyle.smallGrey),
           Text(product.name, style: AppTextStyle.smallBlack),
-          Text(product.price.toBRL(), style: AppTextStyle.smallGreen),
+          SizedBox(height: 2),
+          Text(product.price.toBRL(), style: AppTextStyle.smallBlack),
         ],
       ),
     );
