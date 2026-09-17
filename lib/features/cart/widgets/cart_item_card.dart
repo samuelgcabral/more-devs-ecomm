@@ -26,7 +26,7 @@ class CartItemCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.black),
+        border: Border.all(color: Colors.black12),
         borderRadius: BorderRadius.circular(_cardRadius),
       ),
       child: Row(

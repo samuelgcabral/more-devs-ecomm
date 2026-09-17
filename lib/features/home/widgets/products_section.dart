@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/home/models/product_model.dart';
@@ -25,6 +27,10 @@ class ProductsSection extends StatefulWidget {
 
 class _ProductsSectionState extends State<ProductsSection> {
   final ScrollController _scrollController = ScrollController();
+  Timer? _autoScrollTimer;
+  bool _isUserInteracting = false;
+
+  static const double _cardExtent = 150 + 20;
 
   static final List<Product> _fakeProducts = List.filled(
     4,
@@ -40,9 +46,40 @@ class _ProductsSectionState extends State<ProductsSection> {
   );
 
   @override
+  void didUpdateWidget(covariant ProductsSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final justLoaded = oldWidget.products.isEmpty && widget.products.isNotEmpty;
+    if (justLoaded) {
+      _startAutoScroll();
+    }
+  }
+
+  @override
   void dispose() {
+    _autoScrollTimer?.cancel();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _startAutoScroll() {
+    _autoScrollTimer?.cancel();
+    _autoScrollTimer = Timer.periodic(
+      const Duration(seconds: 5),
+      (_) => _advance(),
+    );
+  }
+
+  void _advance() {
+    if (!_scrollController.hasClients || _isUserInteracting) return;
+
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final target = _scrollController.offset + _cardExtent;
+
+    _scrollController.animateTo(
+      target > maxScroll ? 0 : target,
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOut,
+    );
   }
 
   void _handlePointerSignal(PointerSignalEvent event) {
@@ -50,12 +87,10 @@ class _ProductsSectionState extends State<ProductsSection> {
     if (!_scrollController.hasClients) return;
     if (_scrollController.position.maxScrollExtent <= 0) return;
 
-    // Claim the event so the enclosing vertical ListView doesn't also scroll.
     GestureBinding.instance.pointerSignalResolver.register(event, (
       PointerSignalEvent event,
     ) {
       final scrollEvent = event as PointerScrollEvent;
-      // Translate vertical mouse wheel movement into horizontal scrolling.
       final double delta = scrollEvent.scrollDelta.dy != 0
           ? scrollEvent.scrollDelta.dy
           : scrollEvent.scrollDelta.dx;
@@ -67,7 +102,6 @@ class _ProductsSectionState extends State<ProductsSection> {
       if (target != _scrollController.offset) {
         _scrollController.jumpTo(target);
       }
-      // Stop the browser / OS from also scrolling the page (web & desktop).
       scrollEvent.respond(allowPlatformDefault: false);
     });
   }
@@ -100,28 +134,41 @@ class _ProductsSectionState extends State<ProductsSection> {
 
               return Skeletonizer(
                 enabled: widget.isLoading,
-                child: Listener(
-                  onPointerSignal: _handlePointerSignal,
-                  child: SingleChildScrollView(
-                    controller: _scrollController,
-                    scrollDirection: Axis.horizontal,
-                    physics: widget.isLoading
-                        ? const NeverScrollableScrollPhysics()
-                        : null,
-                    child: IntrinsicHeight(
-                      child: Row(
-                        children: items.map((Product product) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: SizedBox(
-                              width: 150,
-                              child: ProductCard(
-                                product: product,
-                                onTap: () => widget.onProductTap(product),
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: (notification) {
+                    if (notification is ScrollStartNotification &&
+                        notification.dragDetails != null) {
+                      _isUserInteracting = true;
+                    } else if (notification is ScrollEndNotification) {
+                      _isUserInteracting = false;
+                    }
+                    return false;
+                  },
+                  child: Listener(
+                    onPointerSignal: _handlePointerSignal,
+                    child: SingleChildScrollView(
+                      controller: _scrollController,
+                      scrollDirection: Axis.horizontal,
+                      physics: widget.isLoading
+                          ? const NeverScrollableScrollPhysics()
+                          : null,
+                      child: IntrinsicHeight(
+                        child: Row(
+                          children: items.map((Product product) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
                               ),
-                            ),
-                          );
-                        }).toList(),
+                              child: SizedBox(
+                                width: 150,
+                                child: ProductCard(
+                                  product: product,
+                                  onTap: () => widget.onProductTap(product),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
                       ),
                     ),
                   ),

@@ -26,6 +26,12 @@ class CartPage extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    Icon(
+                      Icons.shopping_cart_outlined,
+                      size: 128,
+                      color: Colors.black,
+                    ),
+                    SizedBox(height: 16),
                     const Text('Seu carrinho está vazio.'),
                     const SizedBox(height: 16),
                     AppElevatedButton(
