@@ -7,6 +7,7 @@ import 'package:more_devs_do_zero/features/home/widgets/product_details_modal.da
 import 'package:more_devs_do_zero/features/home/widgets/products_section.dart';
 import 'package:more_devs_do_zero/features/login/controllers/login_controller.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
+import 'package:more_devs_do_zero/shared/widgets/app_confirmation_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:more_devs_do_zero/features/login/pages/login_page.dart';
 
@@ -30,24 +31,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _confirmLogout() async {
-    final shouldLogout = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text('Sair'),
-          content: const Text('Deseja realmente sair da sua conta?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, true),
-              child: const Text('Sair'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('Cancelar'),
-            ),
-          ],
-        );
-      },
+    final shouldLogout = await showAppConfirmationDialog<bool>(
+      context,
+      title: 'Sair',
+      content: 'Deseja realmente sair da sua conta?',
+      options: [
+        AppDialogOption(label: 'Sair', value: true, isDestructive: true),
+        AppDialogOption(label: 'Cancelar', value: false),
+      ],
     );
 
     if (shouldLogout == true && mounted) {
