@@ -69,6 +69,7 @@ class CartPage extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppTextStyle.title,
+                      pulseScale: 0.12,
                     ),
                   ),
                   const SizedBox(width: 12),

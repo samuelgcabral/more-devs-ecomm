@@ -9,6 +9,7 @@ class AnimatedPriceText extends StatefulWidget {
     this.maxLines,
     this.overflow,
     this.duration = const Duration(milliseconds: 400),
+    this.pulseScale = 0.2,
   });
 
   final double value;
@@ -16,6 +17,7 @@ class AnimatedPriceText extends StatefulWidget {
   final int? maxLines;
   final TextOverflow? overflow;
   final Duration duration;
+  final double pulseScale;
 
   @override
   State<AnimatedPriceText> createState() => _AnimatedPriceTextState();
@@ -63,7 +65,7 @@ class _AnimatedPriceTextState extends State<AnimatedPriceText>
       builder: (context, child) {
         final t = _pulse.value;
         return Transform.scale(
-          scale: 1 + 0.3 * t,
+          scale: 1 + widget.pulseScale * t,
           child: Text(
             widget.value.toBRL(),
             maxLines: widget.maxLines,
