@@ -20,6 +20,9 @@ class _RecoverPageState extends State<RecoverPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Recuperar senha'),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: SizedBox(
@@ -31,7 +34,7 @@ class _RecoverPageState extends State<RecoverPage> {
               padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
-                  Text('Recuperar senha', style: AppTextStyle.title),
+                  Text('Digite seu e-mail', style: AppTextStyle.title),
                   AppTextField(
                     hintText: 'email@dominio.com',
                     onChanged: (value) {
