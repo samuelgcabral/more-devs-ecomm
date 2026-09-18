@@ -13,8 +13,6 @@ class CartTotalCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Hero(
       tag: heroTag,
-      // The flight happens in the Navigator overlay, which has no Material
-      // ancestor; without this the text gets the yellow underline/monospace.
       child: Material(
         type: MaterialType.transparency,
         child: Container(
