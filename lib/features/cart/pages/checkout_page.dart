@@ -37,7 +37,7 @@ class CheckoutPage extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            '${items[index].quantity}x ${items[index].name}',
+                            '${items[index].quantity}x ${items[index].name} ${items[index].brand}',
                             style: AppTextStyle.smallBlack,
                           ),
                         ),
