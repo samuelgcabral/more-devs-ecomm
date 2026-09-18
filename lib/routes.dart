@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/cart/pages/cart_page.dart';
+import 'package:more_devs_do_zero/features/cart/pages/checkout_page.dart';
 import 'package:more_devs_do_zero/features/home/pages/home_page.dart';
 import 'package:more_devs_do_zero/features/home/pages/products_by_category_page.dart';
 import 'package:more_devs_do_zero/features/login/pages/login_page.dart';
@@ -13,6 +14,7 @@ class AppRoutes {
     RecoverPage.route: (context) => const RecoverPage(),
     HomePage.route: (context) => const HomePage(),
     CartPage.route: (context) => const CartPage(),
+    CheckoutPage.route: (context) => const CheckoutPage(),
     ProductsByCategoryPage.route: (context) {
       final categoryName = ModalRoute.of(context)!.settings.arguments as String;
       return ProductsByCategoryPage(categoryName: categoryName);

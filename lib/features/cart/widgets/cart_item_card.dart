@@ -16,7 +16,7 @@ class CartItemCard extends StatelessWidget {
   final ProductCart item;
   final CartController cartController;
 
-  static const _imageSize = 104.0;
+  static const _imageSize = 66.0;
   static const _cardRadius = 20.0;
   static const _quantityMinWidth = 40.0;
 
@@ -64,14 +64,16 @@ class CartItemCard extends StatelessWidget {
                             item.name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: AppTextStyle.subTitle.copyWith(fontSize: 16),
+                            style: AppTextStyle.smallBlack.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                           Text(
                             item.brand,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: AppTextStyle.smallGrey.copyWith(
-                              fontSize: 14,
+                              fontSize: 12,
                             ),
                           ),
                         ],
@@ -80,14 +82,13 @@ class CartItemCard extends StatelessWidget {
                     const SizedBox(width: 8),
                     AnimatedPriceText(
                       value: item.subtotal,
-                      style: AppTextStyle.title.copyWith(fontSize: 22),
+                      style: AppTextStyle.subTitle.copyWith(fontSize: 18),
                     ),
                   ],
                 ),
                 const SizedBox(height: 20),
                 Row(
-                  spacing: 32,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     QuantityButton(
                       icon: Icons.remove,
@@ -102,7 +103,7 @@ class CartItemCard extends StatelessWidget {
                         textAlign: TextAlign.center,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: AppTextStyle.title,
+                        style: AppTextStyle.smallBlack,
                       ),
                     ),
                     QuantityButton(

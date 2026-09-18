@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/cart/controllers/cart_controller.dart';
+import 'package:more_devs_do_zero/features/cart/pages/checkout_page.dart';
 import 'package:more_devs_do_zero/features/cart/widgets/cart_item_card.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
 import 'package:more_devs_do_zero/shared/widgets/animated_price_text.dart';
@@ -10,12 +11,16 @@ class CartPage extends StatelessWidget {
   const CartPage({super.key});
   static const String route = '/cart';
 
-  static const _continueButtonWidth = 160.0;
+  // static const _continueButtonWidth = 160.0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Carrinho', style: AppTextStyle.subTitle)),
+      backgroundColor: const Color(0xFFFCF5FC),
+      appBar: AppBar(
+        title: Text('Carrinho', style: AppTextStyle.subTitle),
+        centerTitle: true,
+      ),
       body: Consumer<CartController>(
         builder: (context, cartController, child) {
           final items = cartController.items;
@@ -45,6 +50,7 @@ class CartPage extends StatelessWidget {
             );
           }
           return ListView.builder(
+            padding: const EdgeInsets.fromLTRB(0, 8, 0, 32),
             itemCount: items.length,
             itemBuilder: (context, index) {
               return CartItemCard(
@@ -57,34 +63,58 @@ class CartPage extends StatelessWidget {
       ),
       bottomNavigationBar: Consumer<CartController>(
         builder: (context, cartController, child) {
-          if (cartController.items.isEmpty) return const SizedBox.shrink();
+          if (cartController.items.isEmpty) {
+            return const SizedBox.shrink();
+          }
 
           return Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(28, 28, 28, 16),
             decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: Colors.black)),
+              color: Colors.white,
+              border: Border(top: BorderSide(color: Color(0xFFE0E0E0))),
             ),
             child: SafeArea(
               top: false,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(
-                    child: AnimatedPriceText(
-                      value: cartController.totalPrice,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyle.title,
-                      pulseScale: 0.12,
+                  Hero(
+                    tag: 'cart_total',
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 28,
+                        vertical: 20,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: const Color(0xFFE0E0E0)),
+                        borderRadius: BorderRadius.circular(28),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Total do pedido',
+                            style: AppTextStyle.smallGrey,
+                          ),
+                          const SizedBox(height: 6),
+                          AnimatedPriceText(
+                            value: cartController.totalPrice,
+                            style: AppTextStyle.title,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(height: 21),
                   SizedBox(
-                    width: _continueButtonWidth,
+                    width: double.infinity,
+                    height: 52,
                     child: AppElevatedButton(
                       label: 'Continuar',
                       type: ButtonType.filled,
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () =>
+                          Navigator.pushNamed(context, CheckoutPage.route),
                     ),
                   ),
                 ],
