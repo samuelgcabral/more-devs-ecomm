@@ -90,19 +90,23 @@ class CartPage extends StatelessWidget {
                         border: Border.all(color: const Color(0xFFE0E0E0)),
                         borderRadius: BorderRadius.circular(28),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Total do pedido',
-                            style: AppTextStyle.smallGrey,
-                          ),
-                          const SizedBox(height: 6),
-                          AnimatedPriceText(
-                            value: cartController.totalPrice,
-                            style: AppTextStyle.title,
-                          ),
-                        ],
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Total do pedido',
+                              style: AppTextStyle.smallGrey,
+                            ),
+                            const SizedBox(height: 6),
+                            AnimatedPriceText(
+                              value: cartController.totalPrice,
+                              style: AppTextStyle.title,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
