@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/cart/controllers/cart_controller.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
 import 'package:more_devs_do_zero/shared/currency_format.dart';
-import 'package:more_devs_do_zero/shared/widgets/animated_price_text.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_elevated_button.dart';
+import 'package:more_devs_do_zero/shared/widgets/cart_total_card.dart';
 import 'package:provider/provider.dart';
 
 class CheckoutPage extends StatelessWidget {
@@ -26,38 +26,7 @@ class CheckoutPage extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                child: Hero(
-                  tag: 'cart_total',
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 28,
-                      vertical: 20,
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: const Color(0xFFE0E0E0)),
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Total do pedido',
-                            style: AppTextStyle.smallGrey,
-                          ),
-                          const SizedBox(height: 6),
-                          AnimatedPriceText(
-                            value: cartController.totalPrice,
-                            style: AppTextStyle.title,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                child: CartTotalCard(total: cartController.totalPrice),
               ),
               Expanded(
                 child: ListView.builder(
