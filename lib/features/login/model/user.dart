@@ -1,10 +1,15 @@
 class User {
-  final String? id;
+  final String id;
   final String nome;
   final String email;
-  final DateTime? createdAt;
+  final DateTime createdAt;
 
-  User({this.id, required this.nome, required this.email, this.createdAt});
+  User({
+    required this.id,
+    required this.nome,
+    required this.email,
+    required this.createdAt,
+  });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
@@ -20,7 +25,7 @@ class User {
       'id': id,
       'name': nome,
       'email': email,
-      'createdAt': createdAt?.toIso8601String(),
+      'createdAt': createdAt.toIso8601String(),
     };
   }
 }

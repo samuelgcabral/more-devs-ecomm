@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:more_devs_do_zero/features/auth/services/auth_service.dart';
+import 'package:more_devs_do_zero/features/auth/services/session_service.dart';
 import 'package:more_devs_do_zero/features/login/model/user.dart';
 import 'package:more_devs_do_zero/features/login/services/remember_me_service.dart';
 
 class LoginController extends ChangeNotifier {
-  LoginController(this._authService, {RememberMeStorage? rememberMeStorage})
+  LoginController(
+    this._loginService,
+    this._sessionService, {
+    RememberMeStorage? rememberMeStorage,
+  })
     : _rememberMeStorage = rememberMeStorage ?? RememberMeService();
 
-  final AuthService _authService;
+  final LoginService _loginService;
+  final SessionService _sessionService;
   final RememberMeStorage _rememberMeStorage;
   final RegExp _emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
   final int _caracterMinimoSenha = 6;
