@@ -1,7 +1,7 @@
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:more_devs_do_zero/features/auth/services/auth_service.dart';
 import 'package:more_devs_do_zero/features/signup/controllers/signup_controller.dart';
+import 'package:more_devs_do_zero/features/signup/services/signup_service.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_check_box.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_elevated_button.dart';
@@ -27,7 +27,7 @@ class _SignupPageState extends State<SignupPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _signupController ??= SignupController(context.read<AuthService>());
+    _signupController ??= SignupController(context.read<SignupService>());
   }
 
   Future<void> _handleSignup() async {
