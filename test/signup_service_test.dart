@@ -1,37 +1,9 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:more_devs_do_zero/features/signup/services/signup_service.dart';
 import 'package:more_devs_do_zero/shared/exceptions/auth_exception.dart';
 
-class FakeHttpClientAdapter implements HttpClientAdapter {
-  FakeHttpClientAdapter(this.statusCode, this.body);
-
-  final int statusCode;
-  final Map<String, dynamic> body;
-  RequestOptions? lastRequest;
-
-  @override
-  Future<ResponseBody> fetch(
-    RequestOptions options,
-    Stream<Uint8List>? requestStream,
-    Future<void>? cancelFuture,
-  ) async {
-    lastRequest = options;
-    return ResponseBody.fromString(
-      jsonEncode(body),
-      statusCode,
-      headers: {
-        Headers.contentTypeHeader: [Headers.jsonContentType],
-      },
-    );
-  }
-
-  @override
-  void close({bool force = false}) {}
-}
+import 'fake_http_client_adapter.dart';
 
 void main() {
   SignupService buildService(FakeHttpClientAdapter adapter) {

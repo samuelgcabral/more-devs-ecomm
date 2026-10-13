@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/auth/services/session_service.dart';
 import 'package:more_devs_do_zero/features/login/model/user.dart';
+import 'package:more_devs_do_zero/features/login/services/login_service.dart';
 import 'package:more_devs_do_zero/features/login/services/remember_me_service.dart';
 
 class LoginController extends ChangeNotifier {
@@ -8,8 +9,7 @@ class LoginController extends ChangeNotifier {
     this._loginService,
     this._sessionService, {
     RememberMeStorage? rememberMeStorage,
-  })
-    : _rememberMeStorage = rememberMeStorage ?? RememberMeService();
+  }) : _rememberMeStorage = rememberMeStorage ?? RememberMeService();
 
   final LoginService _loginService;
   final SessionService _sessionService;
@@ -54,7 +54,7 @@ class LoginController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void logout() {
+  Future<void> logout() async {
     user = null;
     senhaController.clear();
     isLoading = false;
@@ -64,6 +64,7 @@ class LoginController extends ChangeNotifier {
     }
 
     notifyListeners();
+    await _sessionService.clear();
   }
 
   Future<void> handleLogin() async {
@@ -82,10 +83,12 @@ class LoginController extends ChangeNotifier {
   }
 
   Future<void> login() async {
-    user = await _authService.login(
+    final response = await _loginService.login(
       email: emailController.text,
       senha: senhaController.text,
     );
+    await _sessionService.start(response);
+    user = response.user;
     await _updateRememberedEmail();
   }
 
