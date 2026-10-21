@@ -8,7 +8,9 @@ class FakeHttpClientAdapter implements HttpClientAdapter {
 
   int statusCode;
   Map<String, dynamic> body;
-  RequestOptions? lastRequest;
+  final List<RequestOptions> requests = [];
+
+  RequestOptions? get lastRequest => requests.isEmpty ? null : requests.last;
 
   @override
   Future<ResponseBody> fetch(
@@ -16,7 +18,7 @@ class FakeHttpClientAdapter implements HttpClientAdapter {
     Stream<Uint8List>? requestStream,
     Future<void>? cancelFuture,
   ) async {
-    lastRequest = options;
+    requests.add(options);
     return ResponseBody.fromString(
       jsonEncode(body),
       statusCode,
@@ -46,5 +48,49 @@ Map<String, dynamic> authResponseJson({
       'tokenType': 'Bearer',
       'expiresIn': 604800,
     },
+  };
+}
+
+Map<String, dynamic> productJson({
+  String id = '19dd8360-f174-4262-a6cf-e2f3cda8b5c5',
+  String name = 'Abacaxi pérola',
+  double price = 11.5,
+}) {
+  return {
+    'id': id,
+    'name': name,
+    'brand': 'Sítio do Vale',
+    'imageUrl': 'https://i.postimg.cc/BQMWr9B8/Image.png',
+    'price': price,
+    'categoryId': 'f7616dbe-9cbb-4dde-93b6-0a8c2eda5cfa',
+    'category': 'Frutas',
+    'description': 'Abacaxi pérola suculento.',
+  };
+}
+
+Map<String, dynamic> cartJson(List<(Map<String, dynamic>, int)> items) {
+  final cartItems = [
+    for (final (product, quantity) in items)
+      {
+        'product': product,
+        'quantity': quantity,
+        'subtotal': (product['price'] as double) * quantity,
+      },
+  ];
+  return {
+    'items': cartItems,
+    'itemCount': cartItems.length,
+    'total': cartItems.fold<double>(
+      0,
+      (total, item) => total + (item['subtotal'] as double),
+    ),
+    'updatedAt': '2026-10-13T14:30:00Z',
+  };
+}
+
+Map<String, dynamic> unauthorizedJson() {
+  return {
+    'code': 'UNAUTHORIZED',
+    'message': 'Sessão expirada, faça login novamente',
   };
 }

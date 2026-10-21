@@ -1,33 +1,21 @@
 import 'package:more_devs_do_zero/features/home/models/product_model.dart';
 
-class ProductCart extends Product {
-  int quantity;
-
-  ProductCart({
-    required super.category,
-    required super.brand,
-    required super.name,
-    required super.imageUrl,
-    required super.price,
-    required super.description,
-    required super.id,
-    this.quantity = 1,
+class CartItem {
+  const CartItem({
+    required this.product,
+    required this.quantity,
+    required this.subtotal,
   });
 
-  factory ProductCart.fromProduct(Product product, {int quantity = 1}) {
-    return ProductCart(
-      id: product.id,
-      category: product.category,
-      brand: product.brand,
-      name: product.name,
-      imageUrl: product.imageUrl,
-      price: product.price,
-      description: product.description,
-      quantity: quantity,
+  final Product product;
+  final int quantity;
+  final double subtotal;
+
+  factory CartItem.fromJson(Map<String, dynamic> json) {
+    return CartItem(
+      product: Product.fromJson(json['product'] as Map<String, dynamic>),
+      quantity: json['quantity'] as int,
+      subtotal: (json['subtotal'] as num).toDouble(),
     );
   }
-
-  double get subtotal => price * quantity;
-
-  Product? get product => null;
 }

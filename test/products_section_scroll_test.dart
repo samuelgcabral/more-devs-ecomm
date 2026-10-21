@@ -11,6 +11,7 @@ void main() {
     final products = List.generate(
       20,
       (i) => Product(
+        categoryId: '',
         category: 'cat',
         brand: 'brand',
         name: 'Product $i',

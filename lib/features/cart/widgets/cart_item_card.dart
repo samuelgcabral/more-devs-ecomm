@@ -4,7 +4,9 @@ import 'package:more_devs_do_zero/features/cart/models/cart_item.dart';
 import 'package:more_devs_do_zero/features/cart/widgets/confirm_remove_dialog.dart';
 import 'package:more_devs_do_zero/features/cart/widgets/quantity_button.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
+import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
 import 'package:more_devs_do_zero/shared/widgets/animated_price_text.dart';
+import 'package:more_devs_do_zero/shared/widgets/app_snack_bar.dart';
 
 class CartItemCard extends StatelessWidget {
   const CartItemCard({
@@ -13,7 +15,7 @@ class CartItemCard extends StatelessWidget {
     required this.cartController,
   });
 
-  final ProductCart item;
+  final CartItem item;
   final CartController cartController;
 
   static const _imageSize = 66.0;
@@ -38,7 +40,7 @@ class CartItemCard extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
-                item.imageUrl,
+                item.product.imageUrl,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => const ColoredBox(
                   color: Color(0xFFF2F2F2),
@@ -61,7 +63,7 @@ class CartItemCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            item.name,
+                            item.product.name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: AppTextStyle.smallBlack.copyWith(
@@ -69,7 +71,7 @@ class CartItemCard extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            item.brand,
+                            item.product.brand,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: AppTextStyle.smallGrey.copyWith(
@@ -92,7 +94,9 @@ class CartItemCard extends StatelessWidget {
                   children: [
                     QuantityButton(
                       icon: Icons.remove,
-                      onPressed: () => _decrement(context),
+                      onPressed: cartController.isUpdating
+                          ? null
+                          : () => _decrement(context),
                     ),
                     ConstrainedBox(
                       constraints: const BoxConstraints(
@@ -108,10 +112,9 @@ class CartItemCard extends StatelessWidget {
                     ),
                     QuantityButton(
                       icon: Icons.add,
-                      onPressed: () => cartController.updateQuantity(
-                        item,
-                        item.quantity + 1,
-                      ),
+                      onPressed: cartController.isUpdating
+                          ? null
+                          : () => _changeQuantity(context, item.quantity + 1),
                     ),
                   ],
                 ),
@@ -125,12 +128,30 @@ class CartItemCard extends StatelessWidget {
 
   Future<void> _decrement(BuildContext context) async {
     if (item.quantity == 1) {
-      final confirmed = await confirmRemoveFromCart(context, item.name);
-      if (confirmed) {
-        cartController.removeFromCart(item);
-      }
+      final confirmed = await confirmRemoveFromCart(context, item.product.name);
+      if (!confirmed || !context.mounted) return;
+      await _run(context, () => cartController.removeFromCart(item.product));
     } else {
-      cartController.updateQuantity(item, item.quantity - 1);
+      await _changeQuantity(context, item.quantity - 1);
+    }
+  }
+
+  Future<void> _changeQuantity(BuildContext context, int quantity) {
+    return _run(
+      context,
+      () => cartController.updateQuantity(item.product, quantity),
+    );
+  }
+
+  Future<void> _run(
+    BuildContext context,
+    Future<void> Function() action,
+  ) async {
+    try {
+      await action();
+    } on ApiException catch (e) {
+      if (!context.mounted) return;
+      showErrorSnackBar(context, e.message);
     }
   }
 }

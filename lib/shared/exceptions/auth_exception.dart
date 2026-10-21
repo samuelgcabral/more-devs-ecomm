@@ -1,5 +1,5 @@
-class AuthException implements Exception {
-  final String message;
+import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
 
-  AuthException(this.message);
+class AuthException extends ApiException {
+  AuthException(super.message);
 }

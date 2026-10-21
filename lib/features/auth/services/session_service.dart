@@ -1,5 +1,7 @@
 import 'package:more_devs_do_zero/features/auth/models/auth_response.dart';
+import 'package:more_devs_do_zero/features/auth/services/user_service.dart';
 import 'package:more_devs_do_zero/features/login/model/user.dart';
+import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class TokenStorage {
@@ -38,8 +40,23 @@ class SessionService {
   User? user;
   String? accessToken;
 
+  bool get isAuthenticated => user != null;
+
   Future<void> load() async {
     accessToken ??= await _storage.readToken();
+  }
+
+  // Restaura a sessão ao abrir o app a partir do token salvo.
+  Future<bool> restore(UserService userService) async {
+    await load();
+    if (accessToken == null) return false;
+
+    try {
+      user = await userService.me();
+      return true;
+    } on ApiException {
+      return false;
+    }
   }
 
   Future<void> start(AuthResponse response) async {

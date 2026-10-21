@@ -22,7 +22,7 @@ class LoginController extends ChangeNotifier {
 
   bool isActiveCheckBox = false;
 
-  User? user;
+  User? get user => _sessionService.user;
 
   bool isLoading = false;
 
@@ -55,7 +55,6 @@ class LoginController extends ChangeNotifier {
   }
 
   Future<void> logout() async {
-    user = null;
     senhaController.clear();
     isLoading = false;
 
@@ -63,8 +62,8 @@ class LoginController extends ChangeNotifier {
       emailController.clear();
     }
 
-    notifyListeners();
     await _sessionService.clear();
+    notifyListeners();
   }
 
   Future<void> handleLogin() async {
@@ -88,7 +87,6 @@ class LoginController extends ChangeNotifier {
       senha: senhaController.text,
     );
     await _sessionService.start(response);
-    user = response.user;
     await _updateRememberedEmail();
   }
 

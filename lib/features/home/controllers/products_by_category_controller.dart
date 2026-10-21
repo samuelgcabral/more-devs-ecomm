@@ -1,10 +1,15 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:more_devs_do_zero/features/home/models/category_model.dart';
 import 'package:more_devs_do_zero/features/home/models/product_model.dart';
-import 'package:more_devs_do_zero/shared/mocks.dart';
+import 'package:more_devs_do_zero/features/home/services/catalog_service.dart';
 
 enum ProductsByCategoryViewState { loading, success, error }
 
 class ProductsByCategoryController extends ChangeNotifier {
+  ProductsByCategoryController(this._catalogService);
+
+  final CatalogService _catalogService;
+
   List<Product> _categoryProducts = [];
 
   String _query = '';
@@ -32,19 +37,17 @@ class ProductsByCategoryController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getProductsByCategory(String category) async {
+  Future<void> getProductsByCategory(Category category) async {
+    _query = '';
     changeState(ProductsByCategoryViewState.loading);
-    //simula o delay da API
-    await Future.delayed(Duration(seconds: 3));
     try {
-      _categoryProducts = productsJson
-          .map((item) => Product.fromJson(item))
-          .where((product) => product.category == category)
-          .toList();
+      _categoryProducts = await _catalogService.getProducts(
+        categoryId: category.id,
+      );
 
       changeState(ProductsByCategoryViewState.success);
     } catch (e) {
-      //caso der erro na deserialização, emite o erro para a tela tratar
+      //caso der erro na requisição ou na deserialização, emite o erro para a tela tratar
       changeState(ProductsByCategoryViewState.error);
     }
   }

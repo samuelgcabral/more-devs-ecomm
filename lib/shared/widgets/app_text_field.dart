@@ -12,6 +12,7 @@ class AppTextField extends StatefulWidget {
     this.validator,
     this.controller,
     this.prefixIcon,
+    this.keyboardType,
   });
 
   final String hintText;
@@ -22,6 +23,7 @@ class AppTextField extends StatefulWidget {
   final String? Function(String?)? validator;
   final TextEditingController? controller;
   final Widget? prefixIcon;
+  final TextInputType? keyboardType;
 
   @override
   State<AppTextField> createState() => _AppTextFieldState();
@@ -50,6 +52,7 @@ class _AppTextFieldState extends State<AppTextField> {
       onChanged: widget.onChanged,
       onFieldSubmitted: widget.onFieldSubmitted,
       textInputAction: widget.textInputAction,
+      keyboardType: widget.keyboardType,
       obscureText: isObscure,
       validator: widget.validator,
       decoration: InputDecoration(

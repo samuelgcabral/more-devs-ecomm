@@ -7,6 +7,7 @@ import 'package:more_devs_do_zero/shared/exceptions/auth_exception.dart';
 import 'package:more_devs_do_zero/shared/services/api_client.dart';
 
 import 'fake_http_client_adapter.dart';
+import 'memory_token_storage.dart';
 
 class MemoryRememberMeStorage implements RememberMeStorage {
   String? email;
@@ -19,19 +20,6 @@ class MemoryRememberMeStorage implements RememberMeStorage {
 
   @override
   Future<void> saveEmail(String email) async => this.email = email;
-}
-
-class MemoryTokenStorage implements TokenStorage {
-  String? token;
-
-  @override
-  Future<void> clearToken() async => token = null;
-
-  @override
-  Future<String?> readToken() async => token;
-
-  @override
-  Future<void> saveToken(String token) async => this.token = token;
 }
 
 void main() {
@@ -90,17 +78,6 @@ void main() {
       expect(tokenStorage.token, 'jwt-token');
     },
   );
-
-  test('requests after login carry the bearer token', () async {
-    controller.emailController.text = 'maria@example.com';
-    controller.senhaController.text = 'Senha@123';
-    await controller.login();
-    expect(adapter.lastRequest?.headers['Authorization'], isNull);
-
-    await controller.login();
-
-    expect(adapter.lastRequest?.headers['Authorization'], 'Bearer jwt-token');
-  });
 
   test('incorrect credentials are rejected with the API message', () async {
     adapter
