@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:more_devs_do_zero/features/auth/services/auth_service.dart';
+import 'package:more_devs_do_zero/features/auth/services/session_service.dart';
 import 'package:more_devs_do_zero/features/login/model/user.dart';
+import 'package:more_devs_do_zero/features/login/services/login_service.dart';
 import 'package:more_devs_do_zero/features/login/services/remember_me_service.dart';
 
 class LoginController extends ChangeNotifier {
-  LoginController(this._authService, {RememberMeStorage? rememberMeStorage})
-    : _rememberMeStorage = rememberMeStorage ?? RememberMeService();
+  LoginController(
+    this._loginService,
+    this._sessionService, {
+    RememberMeStorage? rememberMeStorage,
+  }) : _rememberMeStorage = rememberMeStorage ?? RememberMeService();
 
-  final AuthService _authService;
+  final LoginService _loginService;
+  final SessionService _sessionService;
   final RememberMeStorage _rememberMeStorage;
   final RegExp _emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
   final int _caracterMinimoSenha = 6;
@@ -17,7 +22,7 @@ class LoginController extends ChangeNotifier {
 
   bool isActiveCheckBox = false;
 
-  User? user;
+  User? get user => _sessionService.user;
 
   bool isLoading = false;
 
@@ -49,8 +54,7 @@ class LoginController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void logout() {
-    user = null;
+  Future<void> logout() async {
     senhaController.clear();
     isLoading = false;
 
@@ -58,6 +62,7 @@ class LoginController extends ChangeNotifier {
       emailController.clear();
     }
 
+    await _sessionService.clear();
     notifyListeners();
   }
 
@@ -77,10 +82,11 @@ class LoginController extends ChangeNotifier {
   }
 
   Future<void> login() async {
-    user = await _authService.login(
+    final response = await _loginService.login(
       email: emailController.text,
       senha: senhaController.text,
     );
+    await _sessionService.start(response);
     await _updateRememberedEmail();
   }
 

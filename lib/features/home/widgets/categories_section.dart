@@ -17,7 +17,7 @@ class CategoriesSection extends StatelessWidget {
 
   static final List<Category> _fakeCategories = List.filled(
     4,
-    Category(name: 'Categoria', imageUrl: ''),
+    Category(id: '', name: 'Categoria', imageUrl: ''),
   );
 
   @override

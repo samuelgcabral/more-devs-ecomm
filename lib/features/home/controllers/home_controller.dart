@@ -1,13 +1,17 @@
 import 'package:flutter/widgets.dart';
 import 'package:more_devs_do_zero/features/home/models/category_model.dart';
 import 'package:more_devs_do_zero/features/home/models/product_model.dart';
-import 'package:more_devs_do_zero/shared/mocks.dart';
+import 'package:more_devs_do_zero/features/home/services/catalog_service.dart';
 
 enum CategoriesViewState { loading, success, error }
 
 enum ProductsViewState { loading, success, error }
 
 class HomeController extends ChangeNotifier {
+  HomeController(this._catalogService);
+
+  final CatalogService _catalogService;
+
   List<Category> categories = [];
 
   CategoriesViewState categoriesState = CategoriesViewState.loading;
@@ -28,32 +32,24 @@ class HomeController extends ChangeNotifier {
 
   Future<void> getCategories() async {
     changeCategoriesState(CategoriesViewState.loading);
-    //simula o delay da API
-    await Future.delayed(Duration(seconds: 3));
     try {
-      categories = categoriesJson.map((item) {
-        return Category.fromJson(item);
-      }).toList();
+      categories = await _catalogService.getCategories();
 
       changeCategoriesState(CategoriesViewState.success);
     } catch (e) {
-      //caso der erro na deserialização, emite o erro para a tela tratar
+      //caso der erro na requisição ou na deserialização, emite o erro para a tela tratar
       changeCategoriesState(CategoriesViewState.error);
     }
   }
 
   Future<void> getProducts() async {
     changeProductsState(ProductsViewState.loading);
-    //simula o delay da API
-    await Future.delayed(Duration(seconds: 3));
     try {
-      products = productsJson.map((item) {
-        return Product.fromJson(item);
-      }).toList();
+      products = await _catalogService.getProducts();
 
       changeProductsState(ProductsViewState.success);
     } catch (e) {
-      //caso der erro na deserialização, emite o erro para a tela tratar
+      //caso der erro na requisição ou na deserialização, emite o erro para a tela tratar
       changeProductsState(ProductsViewState.error);
     }
   }

@@ -5,7 +5,7 @@ import 'package:more_devs_do_zero/features/login/controllers/login_controller.da
 import 'package:more_devs_do_zero/features/recover/pages/recover_page.dart';
 import 'package:more_devs_do_zero/features/signup/pages/signup_page.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
-import 'package:more_devs_do_zero/shared/exceptions/auth_exception.dart';
+import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_check_box.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_elevated_button.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_text_field.dart';
@@ -28,7 +28,7 @@ class LoginPage extends StatelessWidget {
       await controller.handleLogin();
       if (!context.mounted) return;
       Navigator.popAndPushNamed(context, HomePage.route);
-    } on AuthException catch (e) {
+    } on ApiException catch (e) {
       if (!context.mounted) return;
       AnimatedSnackBar.material(
         e.message,

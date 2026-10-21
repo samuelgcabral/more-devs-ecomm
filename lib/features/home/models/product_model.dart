@@ -3,12 +3,14 @@ class Product {
   final String name;
   final String imageUrl;
   final double price;
+  final String categoryId;
   final String category;
   final String description;
   final String id;
 
   Product({
     required this.id,
+    required this.categoryId,
     required this.category,
     required this.brand,
     required this.name,
@@ -23,6 +25,7 @@ class Product {
       name: json['name'],
       imageUrl: json['imageUrl'],
       price: (json['price'] as num).toDouble(),
+      categoryId: json['categoryId'],
       category: json['category'],
       description: json['description'],
       id:

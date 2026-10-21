@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:more_devs_do_zero/features/cart/controllers/cart_controller.dart';
 import 'package:more_devs_do_zero/features/cart/widgets/cart_icon_button.dart';
 import 'package:more_devs_do_zero/features/home/controllers/home_controller.dart';
 import 'package:more_devs_do_zero/features/home/widgets/banner_section.dart';
@@ -7,13 +8,15 @@ import 'package:more_devs_do_zero/features/home/widgets/product_details_modal.da
 import 'package:more_devs_do_zero/features/home/widgets/products_section.dart';
 import 'package:more_devs_do_zero/features/login/controllers/login_controller.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
+import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_confirmation_dialog.dart';
+import 'package:more_devs_do_zero/shared/widgets/app_snack_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:more_devs_do_zero/features/login/pages/login_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
-  static String route = '/home';
+  static const String route = '/home';
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -27,7 +30,17 @@ class _HomePageState extends State<HomePage> {
       context.read<HomeController>()
         ..getCategories()
         ..getProducts();
+      _loadCart();
     });
+  }
+
+  Future<void> _loadCart() async {
+    try {
+      await context.read<CartController>().loadCart();
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      showErrorSnackBar(context, e.message);
+    }
   }
 
   Future<void> _confirmLogout() async {
@@ -42,15 +55,15 @@ class _HomePageState extends State<HomePage> {
     );
 
     if (shouldLogout == true && mounted) {
+      final cartController = context.read<CartController>();
+      final loginController = context.read<LoginController>();
       Navigator.pushNamedAndRemoveUntil(
         context,
         LoginPage.route,
         (route) => false,
-      ).then((value) {
-        if (mounted) {
-          context.read<LoginController>().logout();
-        }
-      });
+      );
+      cartController.reset();
+      loginController.logout();
     }
   }
 
@@ -61,7 +74,7 @@ class _HomePageState extends State<HomePage> {
         title: Consumer<LoginController>(
           builder: (context, loginController, child) {
             return Text(
-              'Olá ${loginController.user!.nome}',
+              'Olá ${loginController.user?.nome ?? ''}',
               style: AppTextStyle.subTitle,
             );
           },

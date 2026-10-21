@@ -1,10 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:more_devs_do_zero/features/auth/models/registered_user.dart';
-import 'package:more_devs_do_zero/features/auth/services/auth_service.dart';
-import 'package:more_devs_do_zero/features/auth/services/auth_storage.dart';
+import 'package:more_devs_do_zero/features/auth/services/session_service.dart';
 import 'package:more_devs_do_zero/features/login/controllers/login_controller.dart';
+import 'package:more_devs_do_zero/features/login/services/login_service.dart';
 import 'package:more_devs_do_zero/features/login/services/remember_me_service.dart';
-import 'package:more_devs_do_zero/shared/exceptions/auth_exception.dart';
+import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
+
+import 'fake_http_client_adapter.dart';
+import 'memory_token_storage.dart';
 
 class MemoryRememberMeStorage implements RememberMeStorage {
   String? email;
@@ -19,33 +21,25 @@ class MemoryRememberMeStorage implements RememberMeStorage {
   Future<void> saveEmail(String email) async => this.email = email;
 }
 
-class MemoryAuthStorage implements AuthStorage {
-  List<RegisteredUser> users = [];
-
-  @override
-  Future<List<RegisteredUser>> readUsers() async => List.of(users);
-
-  @override
-  Future<void> saveUsers(List<RegisteredUser> users) async {
-    this.users = List.of(users);
-  }
-}
-
 void main() {
   late LoginController controller;
-  late AuthService authService;
-  late MemoryAuthStorage authStorage;
+  late FakeHttpClientAdapter adapter;
+  late SessionService sessionService;
+  late MemoryTokenStorage tokenStorage;
   late MemoryRememberMeStorage rememberMeStorage;
 
   setUp(() {
     rememberMeStorage = MemoryRememberMeStorage();
-    authStorage = MemoryAuthStorage();
-    authService = AuthService(
-      simulatedDelay: Duration.zero,
-      storage: authStorage,
+    tokenStorage = MemoryTokenStorage();
+    sessionService = SessionService(storage: tokenStorage);
+    adapter = FakeHttpClientAdapter(
+      200,
+      authResponseJson(name: 'Maria', email: 'maria@example.com'),
     );
+    final api = fakeApiClient(adapter, session: sessionService);
     controller = LoginController(
-      authService,
+      LoginService(api),
+      sessionService,
       rememberMeStorage: rememberMeStorage,
     );
   });
@@ -54,58 +48,81 @@ void main() {
     controller.dispose();
   });
 
-  test('a newly registered user can log in', () async {
-    await authService.registerUser(
-      nome: 'Maria',
-      email: 'MARIA@EXAMPLE.COM',
-      senha: 'Senha@123',
-    );
+  test(
+    'a successful login posts the credentials and stores the user',
+    () async {
+      controller.emailController.text = ' MARIA@EXAMPLE.COM ';
+      controller.senhaController.text = 'Senha@123';
+      await controller.login();
 
+      expect(adapter.lastRequest?.path, '/auth/login');
+      expect(adapter.lastRequest?.data, {
+        'email': 'maria@example.com',
+        'password': 'Senha@123',
+      });
+      expect(controller.user?.nome, 'Maria');
+      expect(controller.user?.email, 'maria@example.com');
+    },
+  );
+
+  test(
+    'a successful login starts the session and persists the token',
+    () async {
+      controller.emailController.text = 'maria@example.com';
+      controller.senhaController.text = 'Senha@123';
+      await controller.login();
+
+      expect(sessionService.user?.nome, 'Maria');
+      expect(sessionService.accessToken, 'jwt-token');
+      expect(tokenStorage.token, 'jwt-token');
+    },
+  );
+
+  test('incorrect credentials are rejected with the API message', () async {
+    adapter
+      ..statusCode = 401
+      ..body = {
+        'code': 'INVALID_CREDENTIALS',
+        'message': 'E-mail ou senha incorretos',
+      };
+    controller.emailController.text = 'maria@example.com';
+    controller.senhaController.text = 'senha-errada';
+
+    await expectLater(
+      controller.login,
+      throwsA(
+        isA<ApiException>().having(
+          (e) => e.message,
+          'message',
+          'E-mail ou senha incorretos',
+        ),
+      ),
+    );
+    expect(controller.user, isNull);
+    expect(tokenStorage.token, isNull);
+  });
+
+  test('logout clears the session and the persisted token', () async {
     controller.emailController.text = 'maria@example.com';
     controller.senhaController.text = 'Senha@123';
     await controller.login();
 
-    expect(controller.user?.nome, 'Maria');
-    expect(controller.user?.email, 'maria@example.com');
-  });
+    await controller.logout();
 
-  test('registering the same email twice is rejected', () async {
-    await authService.registerUser(
-      nome: 'Maria',
-      email: 'maria@example.com',
-      senha: 'Senha@123',
-    );
-
-    expect(
-      () => authService.registerUser(
-        nome: 'Outra Maria',
-        email: 'maria@example.com',
-        senha: 'Outra@123',
-      ),
-      throwsA(isA<AuthException>()),
-    );
-  });
-
-  test('an incorrect password is rejected', () async {
-    await authService.registerUser(
-      nome: 'Maria',
-      email: 'maria@example.com',
-      senha: 'Senha@123',
-    );
-    controller.emailController.text = 'maria@example.com';
-    controller.senhaController.text = 'senha-errada';
-
-    expect(controller.login, throwsA(isA<AuthException>()));
+    expect(controller.user, isNull);
+    expect(sessionService.user, isNull);
+    expect(sessionService.accessToken, isNull);
+    expect(tokenStorage.token, isNull);
   });
 
   test('remember me saves the email after a successful login', () async {
-    controller.emailController.text = 'VITOR6890@GMAIL.COM';
-    controller.senhaController.text = '123456';
+    controller.emailController.text = 'MARIA@EXAMPLE.COM';
+    controller.senhaController.text = 'Senha@123';
     await controller.changeActiveCheckBox();
 
     await controller.login();
 
-    expect(rememberMeStorage.email, 'vitor6890@gmail.com');
+    expect(rememberMeStorage.email, 'maria@example.com');
   });
 
   test('a remembered email is loaded into the login field', () async {
@@ -126,27 +143,4 @@ void main() {
     expect(rememberMeStorage.email, isNull);
     expect(controller.isActiveCheckBox, isFalse);
   });
-
-  test(
-    'a registered user remains available in a new service instance',
-    () async {
-      await authService.registerUser(
-        nome: 'Maria',
-        email: 'maria@example.com',
-        senha: 'Senha@123',
-      );
-      final restartedAuthService = AuthService(
-        simulatedDelay: Duration.zero,
-        storage: authStorage,
-      );
-
-      final user = await restartedAuthService.login(
-        email: 'maria@example.com',
-        senha: 'Senha@123',
-      );
-
-      expect(user.nome, 'Maria');
-      expect(user.email, 'maria@example.com');
-    },
-  );
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/cart/widgets/cart_icon_button.dart';
 import 'package:more_devs_do_zero/features/home/controllers/products_by_category_controller.dart';
+import 'package:more_devs_do_zero/features/home/models/category_model.dart';
 import 'package:more_devs_do_zero/features/home/models/product_model.dart';
 import 'package:more_devs_do_zero/features/home/widgets/product_card.dart';
 import 'package:more_devs_do_zero/features/home/widgets/product_details_modal.dart';
@@ -10,11 +11,11 @@ import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class ProductsByCategoryPage extends StatefulWidget {
-  const ProductsByCategoryPage({super.key, required this.categoryName});
+  const ProductsByCategoryPage({super.key, required this.category});
 
   static const String route = '/products-by-category';
 
-  final String categoryName;
+  final Category category;
 
   @override
   State<ProductsByCategoryPage> createState() => _ProductsByCategoryPageState();
@@ -28,6 +29,7 @@ class _ProductsByCategoryPageState extends State<ProductsByCategoryPage> {
       name: 'Nome do produto',
       imageUrl: '',
       price: 0,
+      categoryId: '',
       category: '',
       description: '',
       id: '',
@@ -39,7 +41,7 @@ class _ProductsByCategoryPageState extends State<ProductsByCategoryPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ProductsByCategoryController>().getProductsByCategory(
-        widget.categoryName,
+        widget.category,
       );
     });
   }
@@ -49,7 +51,7 @@ class _ProductsByCategoryPageState extends State<ProductsByCategoryPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(widget.categoryName, style: AppTextStyle.title),
+        title: Text(widget.category.name, style: AppTextStyle.title),
         actions: [const CartIconButton()],
       ),
       body: Column(

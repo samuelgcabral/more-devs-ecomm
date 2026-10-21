@@ -1,10 +1,11 @@
-import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/cart/controllers/cart_controller.dart';
 import 'package:more_devs_do_zero/features/cart/widgets/quantity_button.dart';
 import 'package:more_devs_do_zero/features/home/models/product_model.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
 import 'package:more_devs_do_zero/shared/currency_format.dart';
+import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
+import 'package:more_devs_do_zero/shared/widgets/app_snack_bar.dart';
 import 'package:provider/provider.dart';
 
 class ProductDetailsModal extends StatelessWidget {
@@ -36,6 +37,35 @@ class ProductDetailsModal extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _addToCart(
+    BuildContext context,
+    CartController cartController,
+  ) async {
+    try {
+      await cartController.addToCart(product);
+      if (!context.mounted) return;
+      showSuccessSnackBar(context, '${product.name} adicionado ao carrinho');
+      Navigator.pop(context);
+    } on ApiException catch (e) {
+      if (!context.mounted) return;
+      showErrorSnackBar(context, e.message);
+    }
+  }
+
+  // quantidade 0 remove o item do carrinho (mesmo comportamento da API)
+  Future<void> _changeQuantity(
+    BuildContext context,
+    CartController cartController,
+    int quantity,
+  ) async {
+    try {
+      await cartController.updateQuantity(product, quantity);
+    } on ApiException catch (e) {
+      if (!context.mounted) return;
+      showErrorSnackBar(context, e.message);
+    }
   }
 
   @override
@@ -116,16 +146,9 @@ class ProductDetailsModal extends StatelessWidget {
                     height: 48,
                     child: existingItem == null
                         ? ElevatedButton(
-                            onPressed: () {
-                              cartController.addToCart(product);
-                              AnimatedSnackBar.material(
-                                '${product.name} adicionado ao carrinho',
-                                type: AnimatedSnackBarType.success,
-                                mobileSnackBarPosition:
-                                    MobileSnackBarPosition.bottom,
-                              ).show(context);
-                              Navigator.pop(context);
-                            },
+                            onPressed: cartController.isUpdating
+                                ? null
+                                : () => _addToCart(context, cartController),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.black,
                               foregroundColor: Colors.white,
@@ -146,10 +169,13 @@ class ProductDetailsModal extends StatelessWidget {
                             children: [
                               QuantityButton(
                                 icon: Icons.remove,
-                                onPressed: () => cartController.updateQuantity(
-                                  existingItem,
-                                  existingItem.quantity - 1,
-                                ),
+                                onPressed: cartController.isUpdating
+                                    ? null
+                                    : () => _changeQuantity(
+                                        context,
+                                        cartController,
+                                        existingItem.quantity - 1,
+                                      ),
                               ),
                               SizedBox(
                                 width: 56,
@@ -164,10 +190,13 @@ class ProductDetailsModal extends StatelessWidget {
                               ),
                               QuantityButton(
                                 icon: Icons.add,
-                                onPressed: () => cartController.updateQuantity(
-                                  existingItem,
-                                  existingItem.quantity + 1,
-                                ),
+                                onPressed: cartController.isUpdating
+                                    ? null
+                                    : () => _changeQuantity(
+                                        context,
+                                        cartController,
+                                        existingItem.quantity + 1,
+                                      ),
                               ),
                             ],
                           ),

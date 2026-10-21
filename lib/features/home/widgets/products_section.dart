@@ -35,6 +35,7 @@ class _ProductsSectionState extends State<ProductsSection> {
   static final List<Product> _fakeProducts = List.filled(
     4,
     Product(
+      categoryId: '',
       category: 'Categoria do produto',
       brand: 'Marca do produto',
       name: 'Nome do produto',
