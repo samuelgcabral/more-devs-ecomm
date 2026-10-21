@@ -1,15 +1,13 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:more_devs_do_zero/features/signup/services/signup_service.dart';
-import 'package:more_devs_do_zero/shared/exceptions/auth_exception.dart';
+import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
 
 import 'fake_http_client_adapter.dart';
 
 void main() {
   SignupService buildService(FakeHttpClientAdapter adapter) {
-    final dio = Dio(BaseOptions(baseUrl: 'https://api.test/api/v1'))
-      ..httpClientAdapter = adapter;
-    return SignupService(dio);
+    final api = fakeApiClient(adapter);
+    return SignupService(api);
   }
 
   Future<void> register(SignupService service) {
@@ -72,7 +70,7 @@ void main() {
     expect(
       () => register(buildService(adapter)),
       throwsA(
-        isA<AuthException>().having(
+        isA<ApiException>().having(
           (e) => e.message,
           'message',
           'Este e-mail já está cadastrado',
@@ -93,7 +91,7 @@ void main() {
     expect(
       () => register(buildService(adapter)),
       throwsA(
-        isA<AuthException>().having(
+        isA<ApiException>().having(
           (e) => e.message,
           'message',
           'E-mail inválido',

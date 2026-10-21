@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:more_devs_do_zero/features/cart/controllers/cart_controller.dart';
 import 'package:more_devs_do_zero/features/cart/services/cart_service.dart';
@@ -20,9 +19,8 @@ void main() {
 
   setUp(() {
     adapter = FakeHttpClientAdapter(200, cartJson([]));
-    final dio = Dio(BaseOptions(baseUrl: 'https://api.test/api/v1'))
-      ..httpClientAdapter = adapter;
-    controller = CartController(CartService(dio), OrderService(dio));
+    final api = fakeApiClient(adapter);
+    controller = CartController(CartService(api), OrderService(api));
   });
 
   tearDown(() {

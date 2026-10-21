@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/auth/services/session_service.dart';
 import 'package:more_devs_do_zero/features/auth/services/user_service.dart';
@@ -48,18 +47,22 @@ class MyApp extends StatelessWidget {
       providers: [
         Provider(create: (context) => SessionService()),
         Provider(
-          create: (context) => ApiClient.create(
+          create: (context) => ApiClient(
             context.read<SessionService>(),
             onSessionExpired: _onSessionExpired,
           ),
         ),
-        Provider(create: (context) => SignupService(context.read<Dio>())),
-        Provider(create: (context) => LoginService(context.read<Dio>())),
-        Provider(create: (context) => RecoverService(context.read<Dio>())),
-        Provider(create: (context) => UserService(context.read<Dio>())),
-        Provider(create: (context) => CatalogService(context.read<Dio>())),
-        Provider(create: (context) => CartService(context.read<Dio>())),
-        Provider(create: (context) => OrderService(context.read<Dio>())),
+        Provider(create: (context) => SignupService(context.read<ApiClient>())),
+        Provider(create: (context) => LoginService(context.read<ApiClient>())),
+        Provider(
+          create: (context) => RecoverService(context.read<ApiClient>()),
+        ),
+        Provider(create: (context) => UserService(context.read<ApiClient>())),
+        Provider(
+          create: (context) => CatalogService(context.read<ApiClient>()),
+        ),
+        Provider(create: (context) => CartService(context.read<ApiClient>())),
+        Provider(create: (context) => OrderService(context.read<ApiClient>())),
         ChangeNotifierProvider(
           create: (context) {
             return LoginController(

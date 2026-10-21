@@ -3,7 +3,7 @@ import 'package:more_devs_do_zero/features/recover/controllers/recover_code_cont
 import 'package:more_devs_do_zero/features/recover/pages/reset_password_page.dart';
 import 'package:more_devs_do_zero/features/recover/services/recover_service.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
-import 'package:more_devs_do_zero/shared/exceptions/auth_exception.dart';
+import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_elevated_button.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_snack_bar.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_text_field.dart';
@@ -46,7 +46,7 @@ class _RecoverCodePageState extends State<RecoverCodePage> {
         ResetPasswordPage.route,
         arguments: resetToken,
       );
-    } on AuthException catch (e) {
+    } on ApiException catch (e) {
       if (!mounted) return;
       showErrorSnackBar(context, e.message);
     } finally {
@@ -61,7 +61,7 @@ class _RecoverCodePageState extends State<RecoverCodePage> {
       final message = await codeController.resendCode();
       if (!mounted) return;
       showSuccessSnackBar(context, message);
-    } on AuthException catch (e) {
+    } on ApiException catch (e) {
       if (!mounted) return;
       showErrorSnackBar(context, e.message);
     } finally {

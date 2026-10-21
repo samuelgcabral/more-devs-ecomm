@@ -3,7 +3,7 @@ import 'package:more_devs_do_zero/features/login/pages/login_page.dart';
 import 'package:more_devs_do_zero/features/recover/controllers/reset_password_controller.dart';
 import 'package:more_devs_do_zero/features/recover/services/recover_service.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
-import 'package:more_devs_do_zero/shared/exceptions/auth_exception.dart';
+import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_elevated_button.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_required_password.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_snack_bar.dart';
@@ -47,7 +47,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         'Senha alterada com sucesso. Faça login com a nova senha.',
       );
       Navigator.popUntil(context, ModalRoute.withName(LoginPage.route));
-    } on AuthException catch (e) {
+    } on ApiException catch (e) {
       if (!mounted) return;
       showErrorSnackBar(context, e.message);
     } finally {

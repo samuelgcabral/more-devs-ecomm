@@ -7,7 +7,7 @@ import 'package:more_devs_do_zero/shared/widgets/app_check_box.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_elevated_button.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_required_password.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_text_field.dart';
-import 'package:more_devs_do_zero/shared/exceptions/auth_exception.dart';
+import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
 import 'package:provider/provider.dart';
 
 class SignupPage extends StatefulWidget {
@@ -48,7 +48,7 @@ class _SignupPageState extends State<SignupPage> {
 
         if (!mounted) return;
         Navigator.pop(context, true);
-      } on AuthException catch (e) {
+      } on ApiException catch (e) {
         if (!mounted) return;
         AnimatedSnackBar.material(
           e.message,

@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:more_devs_do_zero/features/home/services/catalog_service.dart';
 import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
@@ -11,9 +10,8 @@ void main() {
 
   setUp(() {
     adapter = FakeHttpClientAdapter(200, {});
-    final dio = Dio(BaseOptions(baseUrl: 'https://api.test/api/v1'))
-      ..httpClientAdapter = adapter;
-    service = CatalogService(dio);
+    final api = fakeApiClient(adapter);
+    service = CatalogService(api);
   });
 
   test('categories are deserialized from the data envelope', () async {

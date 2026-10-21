@@ -3,7 +3,7 @@ import 'package:more_devs_do_zero/features/recover/controllers/recover_controlle
 import 'package:more_devs_do_zero/features/recover/pages/recover_code_page.dart';
 import 'package:more_devs_do_zero/features/recover/services/recover_service.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
-import 'package:more_devs_do_zero/shared/exceptions/auth_exception.dart';
+import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_elevated_button.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_snack_bar.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_text_field.dart';
@@ -39,7 +39,7 @@ class _RecoverPageState extends State<RecoverPage> {
         RecoverCodePage.route,
         arguments: recoverController.email.trim(),
       );
-    } on AuthException catch (e) {
+    } on ApiException catch (e) {
       if (!mounted) return;
       showErrorSnackBar(context, e.message);
     } finally {

@@ -1,7 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:more_devs_do_zero/features/recover/services/recover_service.dart';
-import 'package:more_devs_do_zero/shared/exceptions/auth_exception.dart';
+import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
 
 import 'fake_http_client_adapter.dart';
 
@@ -13,9 +12,8 @@ void main() {
     adapter = FakeHttpClientAdapter(202, {
       'message': 'Código enviado com sucesso',
     });
-    final dio = Dio(BaseOptions(baseUrl: 'https://api.test/api/v1'))
-      ..httpClientAdapter = adapter;
-    service = RecoverService(dio);
+    final api = fakeApiClient(adapter);
+    service = RecoverService(api);
   });
 
   test('sending the code returns the API message', () async {
@@ -58,7 +56,7 @@ void main() {
     expect(
       service.verifyCode(email: 'vitor@email.com', code: '000000'),
       throwsA(
-        isA<AuthException>().having(
+        isA<ApiException>().having(
           (e) => e.message,
           'message',
           'Código inválido ou expirado',

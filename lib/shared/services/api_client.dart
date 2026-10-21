@@ -2,62 +2,134 @@ import 'package:dio/dio.dart';
 import 'package:more_devs_do_zero/features/auth/services/session_service.dart';
 import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
 
+// Único ponto do app que conhece o Dio. Os services chamam get/post/patch/delete
+// e recebem o corpo da resposta já decodificado, ou um ApiException com a
+// mensagem pronta para exibir.
 class ApiClient {
+  ApiClient(
+    this._session, {
+    this.onSessionExpired,
+    HttpClientAdapter? httpClientAdapter,
+  }) : _dio = Dio(
+         BaseOptions(
+           baseUrl: baseUrl,
+           connectTimeout: const Duration(seconds: 15),
+           receiveTimeout: const Duration(seconds: 15),
+           contentType: Headers.jsonContentType,
+         ),
+       ) {
+    if (httpClientAdapter != null) _dio.httpClientAdapter = httpClientAdapter;
+    _dio.interceptors.add(
+      InterceptorsWrapper(onRequest: _addToken, onError: _handleUnauthorized),
+    );
+  }
+
   static const String baseUrl =
       'https://api-production-c0289.up.railway.app/api/v1';
 
   static const String _requiresAuthKey = 'requiresAuth';
 
-  // Endpoints marcados como protegidos na documentação da API
-  // (/users/me, /cart, /orders) devem ser chamados com essas options.
-  static Options get authenticated => Options(extra: {_requiresAuthKey: true});
+  final Dio _dio;
+  final SessionService _session;
 
-  static Dio create(
-    SessionService session, {
-    void Function()? onSessionExpired,
+  // Chamado quando uma rota protegida responde 401 com o usuário logado.
+  final void Function()? onSessionExpired;
+
+  // `authenticated: true` nos endpoints marcados como protegidos na
+  // documentação da API (/users/me, /cart, /orders).
+  Future<dynamic> get(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    bool authenticated = false,
+    required String fallbackMessage,
   }) {
-    final dio = Dio(
-      BaseOptions(
-        baseUrl: baseUrl,
-        connectTimeout: const Duration(seconds: 15),
-        receiveTimeout: const Duration(seconds: 15),
-        contentType: Headers.jsonContentType,
+    return _request(
+      () => _dio.get(
+        path,
+        queryParameters: queryParameters,
+        options: _options(authenticated),
       ),
+      fallbackMessage,
     );
-
-    dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) {
-          final token = session.accessToken;
-          if (_requiresAuth(options) && token != null) {
-            options.headers['Authorization'] = 'Bearer $token';
-          }
-          handler.next(options);
-        },
-        onError: (error, handler) async {
-          if (error.response?.statusCode == 401 &&
-              _requiresAuth(error.requestOptions)) {
-            final wasAuthenticated = session.isAuthenticated;
-            await session.clear();
-            if (wasAuthenticated) onSessionExpired?.call();
-          }
-          handler.next(error);
-        },
-      ),
-    );
-
-    return dio;
   }
 
-  static bool _requiresAuth(RequestOptions options) {
+  Future<dynamic> post(
+    String path, {
+    Object? data,
+    bool authenticated = false,
+    required String fallbackMessage,
+  }) {
+    return _request(
+      () => _dio.post(path, data: data, options: _options(authenticated)),
+      fallbackMessage,
+    );
+  }
+
+  Future<dynamic> patch(
+    String path, {
+    Object? data,
+    bool authenticated = false,
+    required String fallbackMessage,
+  }) {
+    return _request(
+      () => _dio.patch(path, data: data, options: _options(authenticated)),
+      fallbackMessage,
+    );
+  }
+
+  Future<dynamic> delete(
+    String path, {
+    bool authenticated = false,
+    required String fallbackMessage,
+  }) {
+    return _request(
+      () => _dio.delete(path, options: _options(authenticated)),
+      fallbackMessage,
+    );
+  }
+
+  Options _options(bool authenticated) {
+    return Options(extra: {_requiresAuthKey: authenticated});
+  }
+
+  Future<dynamic> _request(
+    Future<Response<dynamic>> Function() request,
+    String fallbackMessage,
+  ) async {
+    try {
+      final response = await request();
+      return response.data;
+    } on DioException catch (e) {
+      throw ApiException(_errorMessage(e, fallback: fallbackMessage));
+    }
+  }
+
+  void _addToken(RequestOptions options, RequestInterceptorHandler handler) {
+    final token = _session.accessToken;
+    if (_requiresAuth(options) && token != null) {
+      options.headers['Authorization'] = 'Bearer $token';
+    }
+    handler.next(options);
+  }
+
+  Future<void> _handleUnauthorized(
+    DioException error,
+    ErrorInterceptorHandler handler,
+  ) async {
+    if (error.response?.statusCode == 401 &&
+        _requiresAuth(error.requestOptions)) {
+      final wasAuthenticated = _session.isAuthenticated;
+      await _session.clear();
+      if (wasAuthenticated) onSessionExpired?.call();
+    }
+    handler.next(error);
+  }
+
+  bool _requiresAuth(RequestOptions options) {
     return options.extra[_requiresAuthKey] == true;
   }
 
-  static ApiException exception(DioException e, {required String fallback}) {
-    return ApiException(errorMessage(e, fallback: fallback));
-  }
-
-  static String errorMessage(DioException e, {required String fallback}) {
+  String _errorMessage(DioException e, {required String fallback}) {
     final data = e.response?.data;
     if (data is Map<String, dynamic>) {
       final details = data['details'];

@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:more_devs_do_zero/features/auth/models/auth_response.dart';
 import 'package:more_devs_do_zero/features/auth/services/session_service.dart';
@@ -16,7 +15,7 @@ void main() {
   late FakeHttpClientAdapter adapter;
   late MemoryTokenStorage tokenStorage;
   late SessionService session;
-  late Dio dio;
+  late ApiClient api;
   late int sessionExpiredCalls;
 
   setUp(() async {
@@ -24,23 +23,24 @@ void main() {
     tokenStorage = MemoryTokenStorage();
     session = SessionService(storage: tokenStorage);
     sessionExpiredCalls = 0;
-    dio = ApiClient.create(
-      session,
+    api = fakeApiClient(
+      adapter,
+      session: session,
       onSessionExpired: () => sessionExpiredCalls++,
-    )..httpClientAdapter = adapter;
+    );
     await session.start(AuthResponse.fromJson(authResponseJson()));
   });
 
   test('protected endpoints carry the bearer token', () async {
     adapter.body = cartJson([]);
 
-    await CartService(dio).getCart();
+    await CartService(api).getCart();
 
     expect(adapter.lastRequest?.headers['Authorization'], 'Bearer jwt-token');
   });
 
   test('public endpoints are called without the token', () async {
-    await CatalogService(dio).getCategories();
+    await CatalogService(api).getCategories();
 
     expect(adapter.lastRequest?.headers['Authorization'], isNull);
   });
@@ -51,7 +51,7 @@ void main() {
       ..body = unauthorizedJson();
 
     await expectLater(
-      CartService(dio).getCart(),
+      CartService(api).getCart(),
       throwsA(
         isA<ApiException>().having(
           (e) => e.message,
@@ -75,7 +75,7 @@ void main() {
       };
 
     await expectLater(
-      LoginService(dio).login(email: 'a@b.com', senha: 'errada'),
+      LoginService(api).login(email: 'a@b.com', senha: 'errada'),
       throwsA(isA<ApiException>()),
     );
     expect(session.isAuthenticated, isTrue);
@@ -85,17 +85,18 @@ void main() {
   group('session restore', () {
     setUp(() {
       session = SessionService(storage: tokenStorage);
-      dio = ApiClient.create(
-        session,
+      api = fakeApiClient(
+        adapter,
+        session: session,
         onSessionExpired: () => sessionExpiredCalls++,
-      )..httpClientAdapter = adapter;
+      );
       adapter.requests.clear();
     });
 
     test('restores the user from a saved token', () async {
       adapter.body = authResponseJson()['user'] as Map<String, dynamic>;
 
-      final restored = await session.restore(UserService(dio));
+      final restored = await session.restore(UserService(api));
 
       expect(restored, isTrue);
       expect(adapter.lastRequest?.path, '/users/me');
@@ -106,7 +107,7 @@ void main() {
     test('does not call the API without a saved token', () async {
       tokenStorage.token = null;
 
-      final restored = await session.restore(UserService(dio));
+      final restored = await session.restore(UserService(api));
 
       expect(restored, isFalse);
       expect(adapter.requests, isEmpty);
@@ -117,7 +118,7 @@ void main() {
         ..statusCode = 401
         ..body = unauthorizedJson();
 
-      final restored = await session.restore(UserService(dio));
+      final restored = await session.restore(UserService(api));
 
       expect(restored, isFalse);
       expect(tokenStorage.token, isNull);

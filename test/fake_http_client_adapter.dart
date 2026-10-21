@@ -2,6 +2,10 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+import 'package:more_devs_do_zero/features/auth/services/session_service.dart';
+import 'package:more_devs_do_zero/shared/services/api_client.dart';
+
+import 'memory_token_storage.dart';
 
 class FakeHttpClientAdapter implements HttpClientAdapter {
   FakeHttpClientAdapter(this.statusCode, this.body);
@@ -93,4 +97,17 @@ Map<String, dynamic> unauthorizedJson() {
     'code': 'UNAUTHORIZED',
     'message': 'Sessão expirada, faça login novamente',
   };
+}
+
+// ApiClient real (mesmo interceptor de token e 401) respondendo pelo adapter falso.
+ApiClient fakeApiClient(
+  FakeHttpClientAdapter adapter, {
+  SessionService? session,
+  void Function()? onSessionExpired,
+}) {
+  return ApiClient(
+    session ?? SessionService(storage: MemoryTokenStorage()),
+    onSessionExpired: onSessionExpired,
+    httpClientAdapter: adapter,
+  );
 }

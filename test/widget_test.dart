@@ -3,8 +3,7 @@ import 'package:more_devs_do_zero/features/auth/services/session_service.dart';
 import 'package:more_devs_do_zero/features/login/controllers/login_controller.dart';
 import 'package:more_devs_do_zero/features/login/services/login_service.dart';
 import 'package:more_devs_do_zero/features/login/services/remember_me_service.dart';
-import 'package:more_devs_do_zero/shared/exceptions/auth_exception.dart';
-import 'package:more_devs_do_zero/shared/services/api_client.dart';
+import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
 
 import 'fake_http_client_adapter.dart';
 import 'memory_token_storage.dart';
@@ -37,9 +36,9 @@ void main() {
       200,
       authResponseJson(name: 'Maria', email: 'maria@example.com'),
     );
-    final dio = ApiClient.create(sessionService)..httpClientAdapter = adapter;
+    final api = fakeApiClient(adapter, session: sessionService);
     controller = LoginController(
-      LoginService(dio),
+      LoginService(api),
       sessionService,
       rememberMeStorage: rememberMeStorage,
     );
@@ -92,7 +91,7 @@ void main() {
     await expectLater(
       controller.login,
       throwsA(
-        isA<AuthException>().having(
+        isA<ApiException>().having(
           (e) => e.message,
           'message',
           'E-mail ou senha incorretos',

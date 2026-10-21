@@ -1,25 +1,18 @@
-import 'package:dio/dio.dart';
 import 'package:more_devs_do_zero/features/login/model/user.dart';
 import 'package:more_devs_do_zero/shared/services/api_client.dart';
 
 class UserService {
-  UserService(this._dio);
+  UserService(this._api);
 
-  final Dio _dio;
+  final ApiClient _api;
 
   Future<User> me() async {
-    try {
-      final response = await _dio.get<Map<String, dynamic>>(
-        '/users/me',
-        options: ApiClient.authenticated,
-      );
+    final data = await _api.get(
+      '/users/me',
+      authenticated: true,
+      fallbackMessage: 'Não foi possível carregar seus dados',
+    );
 
-      return User.fromJson(response.data!);
-    } on DioException catch (e) {
-      throw ApiClient.exception(
-        e,
-        fallback: 'Não foi possível carregar seus dados',
-      );
-    }
+    return User.fromJson(data as Map<String, dynamic>);
   }
 }
