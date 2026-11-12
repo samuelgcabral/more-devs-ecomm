@@ -2,15 +2,17 @@ import 'package:flutter/widgets.dart';
 import 'package:more_devs_do_zero/features/home/models/category_model.dart';
 import 'package:more_devs_do_zero/features/home/models/product_model.dart';
 import 'package:more_devs_do_zero/features/home/services/catalog_service.dart';
+import 'package:more_devs_do_zero/shared/analytics/app_analytics.dart';
 
 enum CategoriesViewState { loading, success, error }
 
 enum ProductsViewState { loading, success, error }
 
 class HomeController extends ChangeNotifier {
-  HomeController(this._catalogService);
+  HomeController(this._catalogService, this._analytics);
 
   final CatalogService _catalogService;
+  final AppAnalytics _analytics;
 
   List<Category> categories = [];
 
@@ -39,6 +41,7 @@ class HomeController extends ChangeNotifier {
     } catch (e) {
       //caso der erro na requisição ou na deserialização, emite o erro para a tela tratar
       changeCategoriesState(CategoriesViewState.error);
+      _analytics.logLoadError('home_categories');
     }
   }
 
@@ -51,6 +54,7 @@ class HomeController extends ChangeNotifier {
     } catch (e) {
       //caso der erro na requisição ou na deserialização, emite o erro para a tela tratar
       changeProductsState(ProductsViewState.error);
+      _analytics.logLoadError('home_products');
     }
   }
 }

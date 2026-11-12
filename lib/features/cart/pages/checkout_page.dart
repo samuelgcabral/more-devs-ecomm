@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/cart/controllers/cart_controller.dart';
 import 'package:more_devs_do_zero/features/home/pages/home_page.dart';
+import 'package:more_devs_do_zero/shared/analytics/analytics_mixin.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
 import 'package:more_devs_do_zero/shared/currency_format.dart';
 import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
@@ -9,16 +10,29 @@ import 'package:more_devs_do_zero/shared/widgets/app_snack_bar.dart';
 import 'package:more_devs_do_zero/shared/widgets/cart_total_card.dart';
 import 'package:provider/provider.dart';
 
-class CheckoutPage extends StatelessWidget {
+class CheckoutPage extends StatefulWidget {
   const CheckoutPage({super.key});
   static const String route = '/checkout';
+
+  @override
+  State<CheckoutPage> createState() => _CheckoutPageState();
+}
+
+class _CheckoutPageState extends State<CheckoutPage> with AnalyticsMixin {
+  @override
+  String get screenName => CheckoutPage.route;
 
   Future<void> _confirmOrder(
     BuildContext context,
     CartController cartController,
   ) async {
+    // O checkout esvazia o carrinho, então os itens são guardados antes.
+    final items = cartController.items;
+    final total = cartController.totalPrice;
     try {
-      await cartController.checkout();
+      final order = await cartController.checkout();
+      // Só registra a compra depois que a API confirma o pedido.
+      analytics.logPurchase(items, total, transactionId: order.id);
       if (!context.mounted) return;
       showSuccessSnackBar(context, 'Pedido realizado com sucesso');
       Navigator.popUntil(context, ModalRoute.withName(HomePage.route));

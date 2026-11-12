@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/cart/widgets/cart_icon_button.dart';
 import 'package:more_devs_do_zero/features/home/controllers/products_by_category_controller.dart';
 import 'package:more_devs_do_zero/features/home/models/category_model.dart';
 import 'package:more_devs_do_zero/features/home/models/product_model.dart';
+import 'package:more_devs_do_zero/features/home/widgets/brand_filter.dart';
 import 'package:more_devs_do_zero/features/home/widgets/product_card.dart';
 import 'package:more_devs_do_zero/features/home/widgets/product_details_modal.dart';
+import 'package:more_devs_do_zero/shared/analytics/analytics_mixin.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_text_field.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +25,15 @@ class ProductsByCategoryPage extends StatefulWidget {
   State<ProductsByCategoryPage> createState() => _ProductsByCategoryPageState();
 }
 
-class _ProductsByCategoryPageState extends State<ProductsByCategoryPage> {
+class _ProductsByCategoryPageState extends State<ProductsByCategoryPage>
+    with AnalyticsMixin {
+  @override
+  String get screenName => ProductsByCategoryPage.route;
+
+  static const Duration _searchDebounce = Duration(seconds: 1);
+
+  Timer? _searchTimer;
+
   static final List<Product> _fakeProducts = List.filled(
     6,
     Product(
@@ -47,6 +59,32 @@ class _ProductsByCategoryPageState extends State<ProductsByCategoryPage> {
   }
 
   @override
+  void dispose() {
+    _searchTimer?.cancel();
+    super.dispose();
+  }
+
+  // A lista é filtrada a cada tecla, mas o evento search só sai depois de
+  // 1 s sem digitar, para não registrar cada letra.
+  void _onSearchChanged(String query) {
+    final controller = context.read<ProductsByCategoryController>();
+    controller.search(query);
+
+    _searchTimer?.cancel();
+    final term = query.trim();
+    if (term.isEmpty) return;
+
+    _searchTimer = Timer(_searchDebounce, () {
+      if (!mounted) return;
+      analytics.logSearch(
+        searchTerm: term,
+        listName: widget.category.name,
+        resultsCount: controller.products.length,
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -61,7 +99,19 @@ class _ProductsByCategoryPageState extends State<ProductsByCategoryPage> {
             child: AppTextField(
               hintText: 'Buscar produtos',
               prefixIcon: const Icon(Icons.search),
-              onChanged: context.read<ProductsByCategoryController>().search,
+              onChanged: _onSearchChanged,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: Consumer<ProductsByCategoryController>(
+              builder: (context, controller, child) {
+                return BrandFilter(
+                  brands: controller.brands,
+                  selectedBrand: controller.selectedBrand,
+                  onChanged: controller.setSelectedBrand,
+                );
+              },
             ),
           ),
           Expanded(
@@ -100,6 +150,7 @@ class _ProductsByCategoryPageState extends State<ProductsByCategoryPage> {
 
                       return ProductCard(
                         product: product,
+                        listName: widget.category.name,
                         onTap: () {
                           ProductDetailsModal.show(context, product);
                         },

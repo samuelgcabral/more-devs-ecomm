@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/auth/services/session_service.dart';
 import 'package:more_devs_do_zero/features/auth/services/user_service.dart';
@@ -13,20 +14,22 @@ import 'package:more_devs_do_zero/features/orders/services/order_service.dart';
 import 'package:more_devs_do_zero/features/recover/services/recover_service.dart';
 import 'package:more_devs_do_zero/features/signup/services/signup_service.dart';
 import 'package:more_devs_do_zero/features/splash/pages/splash_page.dart';
+import 'package:more_devs_do_zero/firebase_options.dart';
 import 'package:more_devs_do_zero/routes.dart';
+import 'package:more_devs_do_zero/shared/analytics/app_analytics.dart';
 import 'package:more_devs_do_zero/shared/services/api_client.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_snack_bar.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // Chamado pelo ApiClient quando uma rota protegida responde 401
-  // (token expirado ou invalidado pela troca de senha).
   static void _onSessionExpired() {
     final context = AppRoutes.navigatorKey.currentContext;
     if (context == null) return;
@@ -45,6 +48,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider(create: (context) => AppAnalytics()),
         Provider(create: (context) => SessionService()),
         Provider(
           create: (context) => ApiClient(
@@ -73,18 +77,25 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) {
-            return HomeController(context.read<CatalogService>());
+            return HomeController(
+              context.read<CatalogService>(),
+              context.read<AppAnalytics>(),
+            );
           },
         ),
         ChangeNotifierProvider(
           create: (context) {
-            return ProductsByCategoryController(context.read<CatalogService>());
+            return ProductsByCategoryController(
+              context.read<CatalogService>(),
+              context.read<AppAnalytics>(),
+            );
           },
         ),
         ChangeNotifierProvider(
           create: (context) => CartController(
             context.read<CartService>(),
             context.read<OrderService>(),
+            context.read<AppAnalytics>(),
           ),
         ),
       ],

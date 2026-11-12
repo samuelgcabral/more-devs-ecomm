@@ -4,6 +4,8 @@ import 'package:more_devs_do_zero/features/home/pages/home_page.dart';
 import 'package:more_devs_do_zero/features/login/controllers/login_controller.dart';
 import 'package:more_devs_do_zero/features/recover/pages/recover_page.dart';
 import 'package:more_devs_do_zero/features/signup/pages/signup_page.dart';
+import 'package:more_devs_do_zero/shared/analytics/analytics_mixin.dart';
+import 'package:more_devs_do_zero/shared/analytics/app_analytics.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
 import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_check_box.dart';
@@ -11,24 +13,37 @@ import 'package:more_devs_do_zero/shared/widgets/app_elevated_button.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_text_field.dart';
 import 'package:provider/provider.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   static const String route = '/login';
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> with AnalyticsMixin {
+  @override
+  String get screenName => LoginPage.route;
 
   Future<void> _submitLogin(
     BuildContext context,
     LoginController controller,
   ) async {
-    if (controller.isLoading || !controller.key.currentState!.validate()) {
-      return;
-    }
+    if (controller.isLoading) return;
 
+    // A validação do formulário fica no handleLogin, que lança
+    // ErrorDescription quando algum campo é inválido.
     try {
       await controller.handleLogin();
+      analytics.logLogin();
       if (!context.mounted) return;
       Navigator.popAndPushNamed(context, HomePage.route);
+    } on ErrorDescription {
+      // Os erros de cada campo já aparecem no próprio formulário.
+      analytics.logLoginFailed(LoginFailureReason.invalidForm);
     } on ApiException catch (e) {
+      analytics.logLoginFailed(_failureReason(e));
       if (!context.mounted) return;
       AnimatedSnackBar.material(
         e.message,
@@ -36,6 +51,13 @@ class LoginPage extends StatelessWidget {
         mobileSnackBarPosition: MobileSnackBarPosition.bottom,
       ).show(context);
     }
+  }
+
+  LoginFailureReason _failureReason(ApiException e) {
+    final status = e.statusCode;
+    if (status == null) return LoginFailureReason.network;
+    if (status >= 500) return LoginFailureReason.server;
+    return LoginFailureReason.invalidCredentials;
   }
 
   @override

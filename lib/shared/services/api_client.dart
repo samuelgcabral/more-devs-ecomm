@@ -2,9 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:more_devs_do_zero/features/auth/services/session_service.dart';
 import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
 
-// Único ponto do app que conhece o Dio. Os services chamam get/post/patch/delete
-// e recebem o corpo da resposta já decodificado, ou um ApiException com a
-// mensagem pronta para exibir.
 class ApiClient {
   ApiClient(
     this._session, {
@@ -32,11 +29,8 @@ class ApiClient {
   final Dio _dio;
   final SessionService _session;
 
-  // Chamado quando uma rota protegida responde 401 com o usuário logado.
   final void Function()? onSessionExpired;
 
-  // `authenticated: true` nos endpoints marcados como protegidos na
-  // documentação da API (/users/me, /cart, /orders).
   Future<dynamic> get(
     String path, {
     Map<String, dynamic>? queryParameters,
@@ -100,7 +94,14 @@ class ApiClient {
       final response = await request();
       return response.data;
     } on DioException catch (e) {
-      throw ApiException(_errorMessage(e, fallback: fallbackMessage));
+      final data = e.response?.data;
+      throw ApiException(
+        _errorMessage(e, fallback: fallbackMessage),
+        statusCode: e.response?.statusCode,
+        code: data is Map<String, dynamic> && data['code'] is String
+            ? data['code'] as String
+            : null,
+      );
     }
   }
 

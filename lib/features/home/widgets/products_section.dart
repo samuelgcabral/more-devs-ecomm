@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/home/models/product_model.dart';
 import 'package:more_devs_do_zero/features/home/widgets/product_card.dart';
+import 'package:more_devs_do_zero/shared/analytics/app_analytics.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -164,6 +165,7 @@ class _ProductsSectionState extends State<ProductsSection> {
                                 width: 150,
                                 child: ProductCard(
                                   product: product,
+                                  listName: AppAnalytics.homeListName,
                                   onTap: () => widget.onProductTap(product),
                                 ),
                               ),

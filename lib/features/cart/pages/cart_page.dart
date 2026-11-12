@@ -2,16 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/cart/controllers/cart_controller.dart';
 import 'package:more_devs_do_zero/features/cart/pages/checkout_page.dart';
 import 'package:more_devs_do_zero/features/cart/widgets/cart_item_card.dart';
+import 'package:more_devs_do_zero/shared/analytics/analytics_mixin.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_elevated_button.dart';
 import 'package:more_devs_do_zero/shared/widgets/cart_total_card.dart';
 import 'package:provider/provider.dart';
 
-class CartPage extends StatelessWidget {
+class CartPage extends StatefulWidget {
   const CartPage({super.key});
   static const String route = '/cart';
 
-  // static const _continueButtonWidth = 160.0;
+  @override
+  State<CartPage> createState() => _CartPageState();
+}
+
+class _CartPageState extends State<CartPage> with AnalyticsMixin {
+  @override
+  String get screenName => CartPage.route;
+
+  @override
+  void initState() {
+    super.initState();
+    final cartController = context.read<CartController>();
+    analytics.logViewCart(cartController.items, cartController.totalPrice);
+  }
+
+  void _continueToCheckout(CartController cartController) {
+    analytics.logBeginCheckout(cartController.items, cartController.totalPrice);
+    Navigator.pushNamed(context, CheckoutPage.route);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,8 +105,7 @@ class CartPage extends StatelessWidget {
                     child: AppElevatedButton(
                       label: 'Continuar',
                       type: ButtonType.filled,
-                      onPressed: () =>
-                          Navigator.pushNamed(context, CheckoutPage.route),
+                      onPressed: () => _continueToCheckout(cartController),
                     ),
                   ),
                 ],

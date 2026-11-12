@@ -5,14 +5,16 @@ import 'package:more_devs_do_zero/features/cart/services/cart_service.dart';
 import 'package:more_devs_do_zero/features/home/models/product_model.dart';
 import 'package:more_devs_do_zero/features/orders/models/order.dart';
 import 'package:more_devs_do_zero/features/orders/services/order_service.dart';
+import 'package:more_devs_do_zero/shared/analytics/app_analytics.dart';
 
 // O carrinho fica no servidor: cada ação chama a API e substitui o estado
 // local pelo carrinho que ela devolve.
 class CartController extends ChangeNotifier {
-  CartController(this._cartService, this._orderService);
+  CartController(this._cartService, this._orderService, this._analytics);
 
   final CartService _cartService;
   final OrderService _orderService;
+  final AppAnalytics _analytics;
 
   Cart _cart = const Cart.empty();
 
@@ -36,16 +38,26 @@ class CartController extends ChangeNotifier {
 
   Future<void> loadCart() => _update(_cartService.getCart);
 
-  Future<void> addToCart(Product product) {
-    return _update(() => _cartService.addItem(product.id));
+  // Os eventos só saem depois que a API confirma a mudança.
+  Future<void> addToCart(Product product) async {
+    await _update(() => _cartService.addItem(product.id));
+    _analytics.logAddToCart(product);
   }
 
-  Future<void> updateQuantity(Product product, int quantity) {
-    return _update(() => _cartService.updateQuantity(product.id, quantity));
+  // Aumentar a quantidade (+) não gera evento. Diminuir (-) gera
+  // remove_from_cart com a quantidade retirada.
+  Future<void> updateQuantity(Product product, int quantity) async {
+    final previousQuantity = findByProduct(product)?.quantity ?? 0;
+    await _update(() => _cartService.updateQuantity(product.id, quantity));
+
+    final removed = previousQuantity - quantity;
+    if (removed > 0) _analytics.logRemoveFromCart(product, removed);
   }
 
-  Future<void> removeFromCart(Product product) {
-    return _update(() => _cartService.removeItem(product.id));
+  Future<void> removeFromCart(Product product) async {
+    final removed = findByProduct(product)?.quantity ?? 0;
+    await _update(() => _cartService.removeItem(product.id));
+    if (removed > 0) _analytics.logRemoveFromCart(product, removed);
   }
 
   Future<Order> checkout() async {

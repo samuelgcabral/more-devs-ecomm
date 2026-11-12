@@ -1,8 +1,6 @@
 import 'package:more_devs_do_zero/features/cart/models/cart.dart';
 import 'package:more_devs_do_zero/shared/services/api_client.dart';
 
-// Todas as rotas do carrinho são protegidas e respondem com o carrinho
-// atualizado.
 class CartService {
   CartService(this._api);
 

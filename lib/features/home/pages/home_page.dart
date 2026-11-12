@@ -7,6 +7,7 @@ import 'package:more_devs_do_zero/features/home/widgets/categories_section.dart'
 import 'package:more_devs_do_zero/features/home/widgets/product_details_modal.dart';
 import 'package:more_devs_do_zero/features/home/widgets/products_section.dart';
 import 'package:more_devs_do_zero/features/login/controllers/login_controller.dart';
+import 'package:more_devs_do_zero/shared/analytics/analytics_mixin.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
 import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_confirmation_dialog.dart';
@@ -22,7 +23,10 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with AnalyticsMixin {
+  @override
+  String get screenName => HomePage.route;
+
   @override
   void initState() {
     super.initState();

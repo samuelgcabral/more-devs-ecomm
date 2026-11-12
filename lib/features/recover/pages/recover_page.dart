@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/recover/controllers/recover_controller.dart';
 import 'package:more_devs_do_zero/features/recover/pages/recover_code_page.dart';
 import 'package:more_devs_do_zero/features/recover/services/recover_service.dart';
+import 'package:more_devs_do_zero/shared/analytics/analytics_mixin.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
 import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_elevated_button.dart';
@@ -18,7 +19,10 @@ class RecoverPage extends StatefulWidget {
   State<RecoverPage> createState() => _RecoverPageState();
 }
 
-class _RecoverPageState extends State<RecoverPage> {
+class _RecoverPageState extends State<RecoverPage> with AnalyticsMixin {
+  @override
+  String get screenName => RecoverPage.route;
+
   late final RecoverController recoverController;
 
   @override
@@ -28,6 +32,7 @@ class _RecoverPageState extends State<RecoverPage> {
   }
 
   Future<void> _sendCode() async {
+    analytics.logPasswordResetRequest();
     setState(() => recoverController.isLoading = true);
 
     try {

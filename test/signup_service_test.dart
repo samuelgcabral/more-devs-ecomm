@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:more_devs_do_zero/features/signup/exceptions/signup_exception.dart';
 import 'package:more_devs_do_zero/features/signup/services/signup_service.dart';
 import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
 
@@ -96,6 +97,30 @@ void main() {
           'message',
           'E-mail inválido',
         ),
+      ),
+    );
+  });
+
+  test('API errors carry a SignupExceptionType and keep the message', () async {
+    final adapter = FakeHttpClientAdapter(409, {
+      'code': 'EMAIL_ALREADY_EXISTS',
+      'message': 'Este e-mail já está cadastrado',
+    });
+
+    expect(
+      () => register(buildService(adapter)),
+      throwsA(
+        isA<SignupException>()
+            .having(
+              (e) => e.type,
+              'type',
+              SignupExceptionType.emailAlreadyExists,
+            )
+            .having(
+              (e) => e.message,
+              'message',
+              'Este e-mail já está cadastrado',
+            ),
       ),
     );
   });

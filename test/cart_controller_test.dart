@@ -5,6 +5,7 @@ import 'package:more_devs_do_zero/features/home/models/product_model.dart';
 import 'package:more_devs_do_zero/features/orders/services/order_service.dart';
 import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
 
+import 'fake_app_analytics.dart';
 import 'fake_http_client_adapter.dart';
 
 void main() {
@@ -17,10 +18,13 @@ void main() {
     price: 7.99,
   );
 
+  late FakeAppAnalytics analytics;
+
   setUp(() {
     adapter = FakeHttpClientAdapter(200, cartJson([]));
+    analytics = FakeAppAnalytics();
     final api = fakeApiClient(adapter);
-    controller = CartController(CartService(api), OrderService(api));
+    controller = CartController(CartService(api), OrderService(api), analytics);
   });
 
   tearDown(() {
@@ -139,6 +143,65 @@ void main() {
         ),
       ),
     );
+  });
+
+  group('analytics', () {
+    test('adding a product logs add_to_cart with quantity 1', () async {
+      adapter.body = cartJson([(abacaxi, 1)]);
+
+      await controller.addToCart(Product.fromJson(abacaxi));
+
+      final event = analytics.events.single;
+      expect(event.name, 'add_to_cart');
+      expect(event.parameters['item_id'], abacaxi['id']);
+      expect(event.parameters['quantity'], 1);
+      expect(event.parameters['currency'], 'BRL');
+      expect(event.parameters['value'], abacaxi['price']);
+    });
+
+    test('increasing the quantity logs nothing', () async {
+      adapter.body = cartJson([(abacaxi, 1)]);
+      await controller.loadCart();
+      adapter.body = cartJson([(abacaxi, 2)]);
+
+      await controller.updateQuantity(Product.fromJson(abacaxi), 2);
+
+      expect(analytics.events, isEmpty);
+    });
+
+    test('decreasing the quantity logs remove_from_cart', () async {
+      adapter.body = cartJson([(abacaxi, 3)]);
+      await controller.loadCart();
+      adapter.body = cartJson([(abacaxi, 2)]);
+
+      await controller.updateQuantity(Product.fromJson(abacaxi), 2);
+
+      expect(analytics.names, ['remove_from_cart']);
+      expect(analytics.events.single.parameters['quantity'], 1);
+    });
+
+    test('removing the item logs the whole quantity', () async {
+      adapter.body = cartJson([(abacaxi, 2)]);
+      await controller.loadCart();
+      adapter.body = cartJson([]);
+
+      await controller.removeFromCart(Product.fromJson(abacaxi));
+
+      expect(analytics.names, ['remove_from_cart']);
+      expect(analytics.events.single.parameters['quantity'], 2);
+    });
+
+    test('a failed request logs nothing', () async {
+      adapter
+        ..statusCode = 404
+        ..body = {'code': 'PRODUCT_NOT_FOUND', 'message': 'x'};
+
+      await expectLater(
+        controller.addToCart(Product.fromJson(abacaxi)),
+        throwsA(isA<ApiException>()),
+      );
+      expect(analytics.events, isEmpty);
+    });
   });
 
   test('reset clears the cart locally without calling the API', () async {

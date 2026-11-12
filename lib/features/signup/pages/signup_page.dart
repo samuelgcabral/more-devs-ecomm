@@ -1,13 +1,14 @@
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:more_devs_do_zero/features/signup/controllers/signup_controller.dart';
+import 'package:more_devs_do_zero/features/signup/exceptions/signup_exception.dart';
 import 'package:more_devs_do_zero/features/signup/services/signup_service.dart';
+import 'package:more_devs_do_zero/shared/analytics/analytics_mixin.dart';
 import 'package:more_devs_do_zero/shared/app_text_style.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_check_box.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_elevated_button.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_required_password.dart';
 import 'package:more_devs_do_zero/shared/widgets/app_text_field.dart';
-import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
 import 'package:provider/provider.dart';
 
 class SignupPage extends StatefulWidget {
@@ -19,7 +20,10 @@ class SignupPage extends StatefulWidget {
   State<SignupPage> createState() => _SignupPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _SignupPageState extends State<SignupPage> with AnalyticsMixin {
+  @override
+  String get screenName => SignupPage.route;
+
   SignupController? _signupController;
   SignupController get signupController => _signupController!;
   final GlobalKey<FormState> key = GlobalKey<FormState>();
@@ -34,6 +38,7 @@ class _SignupPageState extends State<SignupPage> {
     final isFormValid = key.currentState!.validate();
 
     if (!signupController.validateCheckBox()) {
+      analytics.logSignUpFailed('terms_not_accepted');
       setState(() {});
       return;
     }
@@ -45,10 +50,12 @@ class _SignupPageState extends State<SignupPage> {
 
       try {
         await signupController.signUp();
+        analytics.logSignUp();
 
         if (!mounted) return;
         Navigator.pop(context, true);
-      } on ApiException catch (e) {
+      } on SignupException catch (e) {
+        analytics.logSignUpFailed(e.type.value);
         if (!mounted) return;
         AnimatedSnackBar.material(
           e.message,

@@ -1,4 +1,6 @@
 import 'package:more_devs_do_zero/features/auth/models/auth_response.dart';
+import 'package:more_devs_do_zero/features/signup/exceptions/signup_exception.dart';
+import 'package:more_devs_do_zero/shared/exceptions/api_exception.dart';
 import 'package:more_devs_do_zero/shared/services/api_client.dart';
 
 class SignupService {
@@ -13,17 +15,23 @@ class SignupService {
     required String confirmarSenha,
     required bool aceitouTermos,
   }) async {
-    final data = await _api.post(
-      '/auth/register',
-      data: {
-        'name': nome.trim(),
-        'email': email.trim().toLowerCase(),
-        'password': senha,
-        'confirmPassword': confirmarSenha,
-        'acceptedTerms': aceitouTermos,
-      },
-      fallbackMessage: 'Não foi possível concluir o cadastro. Tente novamente',
-    );
+    final dynamic data;
+    try {
+      data = await _api.post(
+        '/auth/register',
+        data: {
+          'name': nome.trim(),
+          'email': email.trim().toLowerCase(),
+          'password': senha,
+          'confirmPassword': confirmarSenha,
+          'acceptedTerms': aceitouTermos,
+        },
+        fallbackMessage:
+            'Não foi possível concluir o cadastro. Tente novamente',
+      );
+    } on ApiException catch (e) {
+      throw SignupException.fromApiException(e);
+    }
 
     return AuthResponse.fromJson(data as Map<String, dynamic>);
   }
